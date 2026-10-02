@@ -478,6 +478,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
           <button class="btn sm" onclick="derivConnect()">Connecter</button>
           <button class="btn sm ghost" onclick="derivDisconnect()">Déconnecter</button>
+          <button class="btn sm ghost" onclick="dvDiag()">🩺 Diagnostic</button>
           <select id="dvMult" onchange="S.deriv.multiplier=+this.value;save();dvRender()" style="width:auto">
             <option value="50">Multiplicateur x50</option>
             <option value="100" selected>Multiplicateur x100</option>
@@ -1442,22 +1443,85 @@ function dvTrackContract(c){
   if(pos.sl&&(up?pos.spot<=pos.sl:pos.spot>=pos.sl))derivSell(c.contract_id,'SL');
   else if(pos.tp&&(up?pos.spot>=pos.tp:pos.spot<=pos.tp))derivSell(c.contract_id,'TP');
 }
+const DV_ENDPOINTS=[
+  {app:'1089',url:'wss://ws.derivws.com/websockets/v3?app_id=1089'},
+  {app:'36300',url:'wss://ws.derivws.com/websockets/v3?app_id=36300'},
+  {app:'16929',url:'wss://ws.derivws.com/websockets/v3?app_id=16929'},
+  {app:'1180',url:'wss://ws.derivws.com/websockets/v3?app_id=1180'},
+  {app:'1089',url:'wss://ws.binaryws.com/websockets/v3?app_id=1089',alt:true}
+];
+function dvTryEndpoint(ep,timeout){
+  return new Promise(res=>{
+    let ws,done=false;
+    try{ws=new WebSocket(ep.url);}catch(e){res(null);return;}
+    const t=setTimeout(()=>{if(!done){done=true;try{ws.close()}catch(e){};res(null);}},timeout||6000);
+    ws.onopen=()=>{if(done)return;done=true;clearTimeout(t);res(ws);};
+    ws.onerror=()=>{if(done)return;done=true;clearTimeout(t);res(null);};
+  });
+}
+async function dvDiag(){
+  const d=S.deriv;
+  d.token=document.getElementById('dvToken').value.trim()||d.token;
+  d.diag=null; d.status='Diagnostic en cours…';save();dvRender();
+  const res={t:Date.now(),net:'',eps:[],auth:''};
+  try{ await fetch('https://deriv.com',{mode:'no-cors'}); res.net='OK — ce navigateur atteint deriv.com'; }
+  catch(e){ res.net='BLOQUÉ — deriv.com injoignable depuis ce navigateur/réseau'; }
+  const eps=[];
+  const cur=(document.getElementById('dvAppId').value||'').replace(/\D/g,'');
+  if(cur)eps.push({app:cur,url:'wss://ws.derivws.com/websockets/v3?app_id='+cur});
+  for(const e of DV_ENDPOINTS)eps.push(e);
+  let firstOk=null;
+  for(const ep of eps){
+    const ws=await dvTryEndpoint(ep,7000);
+    const ok=!!ws;
+    res.eps.push({app:ep.app+(ep.alt?' (binaryws)':''),url:ep.url.replace('wss://','').split('?')[0],ok});
+    if(ok&&!firstOk)firstOk=ep;
+    if(ws){try{ws.close()}catch(e){}}
+    d.diag=JSON.parse(JSON.stringify(res));dvRender();
+  }
+  if(firstOk&&d.token){
+    const ws=await dvTryEndpoint(firstOk,7000);
+    if(ws){
+      const ans=await new Promise(r=>{
+        ws.onmessage=ev=>{let dd;try{dd=JSON.parse(ev.data)}catch(e){return;}if(dd.msg_type==='authorize'||dd.error)r(dd);};
+        ws.onmessage; ws.send(JSON.stringify({authorize:d.token}));
+        setTimeout(()=>r({error:{message:'timeout 9s'}}),9000);
+      });
+      try{ws.close()}catch(e){}
+      res.auth=ans.authorize?('✔ Token VALIDE — compte '+ans.authorize.loginid+' ('+(ans.authorize.is_virtual?'DÉMO':'RÉEL')+') · droits : '+(ans.authorize.scopes||[]).join(', ')):('✖ '+(ans.error&&ans.error.message)||'token refusé');
+    } else res.auth='WebSocket refermé pendant le test du token';
+  } else if(!firstOk) res.auth='Aucun point de connexion ouvert. Deriv est bloqué par ce navigateur ou ce réseau — essayez Chrome, désactivez le mode Turbo de Yandex, ou changez de réseau (WiFi ↔ 4G).';
+  else res.auth='Mettez votre token pour tester l\u2019autorisation.';
+  d.diag=res; d.status='Diagnostic terminé ✔'; save();dvRender();
+}
 function derivConnect(){
   const d=S.deriv;
   d.token=document.getElementById('dvToken').value.trim();
-  d.appId=(document.getElementById('dvAppId').value.trim()||'1089');
+  let app=(document.getElementById('dvAppId').value||'').replace(/\D/g,'');
+  if(!app)app='1089';
+  d.appId=app;
   if(!d.token){toast('Collez votre token Deriv (créé sur app.deriv.com avec droits read + trade)','🔑');return;}
-  d.status='Connexion à Deriv…';save();dvRender();
-  try{ if(DW){try{DW.close()}catch(e){} } }catch(e){}
-  DW=new WebSocket('wss://ws.derivws.com/websockets/v3?app_id='+d.appId);
-  DW.onmessage=dvOnMsg;
-  DW.onclose=()=>{ if(S.deriv.connected){S.deriv.connected=false;S.deriv.status='Connexion Deriv fermée — reconnectez';save();dvRender();toast('Connexion Deriv fermée','⚠️');} };
-  DW.onerror=()=>{ S.deriv.status='Erreur WebSocket Deriv (app_id ou réseau)';save();dvRender(); };
-  DW.onopen=async()=>{
+  d.status='Recherche du point de connexion Deriv…';save();dvRender();
+  (async()=>{
+    try{ if(DW){try{DW.close()}catch(e){} DW=null; } }catch(e){}
+    const eps=[{app:app,url:'wss://ws.derivws.com/websockets/v3?app_id='+app}];
+    for(const e of DV_ENDPOINTS)if(e.app!==app||e.alt)eps.push(e);
+    let ws=null,used=null;
+    for(const ep of eps){
+      d.status='Essai app_id '+ep.app+(ep.alt?' (binaryws)':'')+'…';save();dvRender();
+      ws=await dvTryEndpoint(ep,6000);
+      if(ws){used=ep;break;}
+    }
+    if(!ws){ d.status='❌ Deriv injoignable depuis ce navigateur/réseau — tapez 🩺 Diagnostic pour voir le détail'; save();dvRender(); toast('Deriv injoignable — lancez le Diagnostic','⚠️'); return; }
+    DW=ws; d.appId=used.app;
+    DW.onmessage=dvOnMsg;
+    DW.onclose=()=>{ if(S.deriv.connected){S.deriv.connected=false;S.deriv.tradeOn=false;S.deriv.status='Connexion Deriv fermée — reconnectez';save();dvRender();toast('Connexion Deriv fermée','⚠️');} };
+    DW.onerror=()=>{ if(!S.deriv.connected){S.deriv.status='Erreur WebSocket Deriv';save();dvRender();} };
+    d.status='WebSocket ouvert ✔ (app_id '+used.app+') — vérification du token…';save();dvRender();
     const a=await dvSend({authorize:d.token});
     if(a.error){ d.status='Token Deriv refusé : '+a.error.message; save();dvRender();return; }
     const au=a.authorize;
-    if(!(au.scopes||[]).includes('trade')){ d.status='Token valide mais SANS droit trade — recréez le token avec les droits read + trade sur app.deriv.com'; save();dvRender();return; }
+    if(!(au.scopes||[]).includes('trade')){ d.status='Token valide mais SANS droit trade — recréez le token sur app.deriv.com → API token avec droits Read + Trade'; save();dvRender();return; }
     d.info={login:au.loginid,balance:+au.balance,currency:au.currency,virtual:!!au.is_virtual,name:au.fullname||''};
     d.connected=true; d.dayStartBal=null;
     d.status='Connecté ✔ — '+(au.is_virtual?'compte DÉMO virtuel':'COMPTE RÉEL');
@@ -1466,7 +1530,7 @@ function derivConnect(){
     for(const s of S.strategies)if(s.on)dvSubTicks(s.sym);
     save();dvRender();render();
     toast('Deriv connecté — '+(au.is_virtual?'démo virtuel':'COMPTE RÉEL ⚠️'),'🟢');
-  };
+  })();
 }
 function dvSubTicks(sym){
   const d=S.deriv;
@@ -1541,10 +1605,19 @@ async function derivSell(cid,why){
 function dvRender(){
   const d=S.deriv;
   const tk=document.getElementById('dvToken'), ap=document.getElementById('dvAppId'), mu=document.getElementById('dvMult');
-  if(tk&&document.activeElement!==tk){tk.value=d.token;ap.value=d.appId;mu.value=String(d.multiplier||100);}
+  if(tk&&document.activeElement!==tk){tk.value=d.token;ap.value=String(d.appId||'').replace(/\D/g,'')||'1089';mu.value=String(d.multiplier||100);}
   const sw=document.getElementById('dvTradeSw'); if(sw)sw.classList.toggle('on',!!d.tradeOn);
   const st=document.getElementById('dvStatus');
-  if(st)st.innerHTML=(d.connected?'<span class="up">●</span> ':'● ')+(d.status||'non connecté');
+  if(st){
+    let h=(d.connected?'<span class="up">●</span> ':'● ')+(d.status||'non connecté');
+    if(d.diag){
+      h+='<div style="margin-top:8px;color:var(--txt2);line-height:1.9">'
+        +'<div>🌐 Réseau : '+d.diag.net+'</div>';
+      for(const e of d.diag.eps)h+='<div>'+(e.ok?'<span class="up">✔</span>':'<span class="dn">✖</span>')+' app_id '+e.app+' — '+e.url+' : '+(e.ok?'ouvert':'refusé')+'</div>';
+      h+='<div>🔑 Token : '+d.diag.auth+'</div></div>';
+    }
+    st.innerHTML=h;
+  }
   const ac=document.getElementById('dvAccount');
   if(ac){
     if(d.connected&&d.info){
@@ -1601,6 +1674,7 @@ function boot(){
   S.meta=Object.assign({token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},S.meta||{});
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
+  if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
   S.meta.positions=[]; S.meta.realOrders=S.meta.realOrders||[];
   if(!S.closed.length&&!S.signals.length) seedDemo();
