@@ -223,6 +223,43 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 .modal.on{display:flex}
 .modal .mcard{background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:24px;width:min(520px,94vw);max-height:88vh;overflow-y:auto;backdrop-filter:blur(16px)}
 .modal h3{font-size:22px;margin-bottom:14px}
+
+/* ===== v4 : LAUNCHER + THÈMES BROKERS ===== */
+#launcher{display:none;min-height:calc(100vh - 64px);align-items:center;justify-content:center;padding:56px 20px}
+body.choosing #launcher{display:flex}
+body.choosing .hero,body.choosing section,body.choosing #portal,body.choosing footer{display:none}
+body.launched .hero,body.launched section:not(#portal){display:none}
+.lgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:980px;margin:0 auto}
+@media(max-width:880px){.lgrid{grid-template-columns:1fr;max-width:420px}}
+.lcard2{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:30px 24px;text-align:center;backdrop-filter:blur(12px);transition:.28s;cursor:pointer;position:relative;overflow:hidden}
+.lcard2::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--acc)}
+.lcard2:hover{transform:translateY(-8px);border-color:var(--acc);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.lcard2 h3{font-size:30px;letter-spacing:1.5px;margin:12px 0 6px}
+.lcard2 .sub{font-size:12.5px;color:var(--txt3);line-height:1.7;min-height:64px}
+.lrobot{width:130px;height:120px;margin:0 auto;display:block}
+.lrobot .rbody{animation:rfloat 3.2s ease-in-out infinite}
+.lrobot .eye{animation:rblink 4.2s infinite}
+.lrobot .ant{animation:pulse 1.3s infinite}
+.lrobot .bars rect{transform-origin:bottom;animation:rgrow 2.2s ease-in-out infinite}
+.lrobot .bars rect:nth-child(2){animation-delay:.35s}
+.lrobot .bars rect:nth-child(3){animation-delay:.7s}
+@keyframes rfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes rblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes rgrow{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1.15)}}
+.lcard2 .btn{margin-top:12px;width:100%;background:linear-gradient(90deg,var(--acc2,var(--acc)),var(--acc));color:#101010}
+body.th-bnc #v-bnc .btn{background:linear-gradient(90deg,#d4a017,#F0B90B);color:#1a1400;box-shadow:0 8px 24px rgba(240,185,11,.2)}
+body.th-bnc #v-bnc .btn.ghost{color:#f0d060;border-color:rgba(240,185,11,.4);background:rgba(240,185,11,.06);box-shadow:none}
+body.th-bnc #v-bnc .vhead h2::after{background:linear-gradient(90deg,#F0B90B,transparent)}
+body.th-bnc #v-bnc .setcard h3::before{background:#F0B90B;box-shadow:0 0 8px rgba(240,185,11,.6)}
+body.th-dv #v-dv .btn{background:linear-gradient(90deg,#c9302c,#ff444f);color:#fff;box-shadow:0 8px 24px rgba(255,68,79,.2)}
+body.th-dv #v-dv .btn.ghost{color:#ff8a92;border-color:rgba(255,68,79,.4);background:rgba(255,68,79,.06);box-shadow:none}
+body.th-dv #v-dv .vhead h2::after{background:linear-gradient(90deg,#ff444f,transparent)}
+body.th-dv #v-dv .setcard h3::before{background:#ff444f;box-shadow:0 0 8px rgba(255,68,79,.6)}
+body.th-ma #v-ma .btn{background:linear-gradient(90deg,#1d4ed8,#3b82f6);color:#fff;box-shadow:0 8px 24px rgba(59,130,246,.2)}
+body.th-ma #v-ma .btn.ghost{color:#93c5fd;border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.06);box-shadow:none}
+body.th-ma #v-ma .vhead h2::after{background:linear-gradient(90deg,#3b82f6,transparent)}
+body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.6)}
+.identcard{border:1px solid rgba(0,200,150,.3);background:rgba(0,200,150,.05)}
 </style>
 </head>
 <body>
@@ -253,6 +290,35 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
   <span class="status-pill st-run" id="copierPill"><span class="dot"></span><span id="copierPillTxt">COPIEUR ACTIF</span></span>
   <button class="btn sm ghost" id="toggleBtn" onclick="toggleCopier()">PAUSE</button>
   <button class="iconbtn" title="Verrouiller" onclick="lock()">🔒</button>
+</div></div>
+
+<!-- LAUNCHER : CHOIX DU BROKER -->
+<div id="launcher"><div class="wrap" style="width:100%">
+  <div style="text-align:center;margin-bottom:34px">
+    <div class="kicker">POSEIDON PRO · ESPACES DE TRADING</div>
+    <h1 style="font-size:clamp(34px,5vw,52px)">Choisissez votre <span style="background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent">broker</span></h1>
+    <p style="color:var(--txt3);font-size:14px;margin-top:8px">Chaque espace affiche uniquement les informations, l'historique et le P&L de son broker.</p>
+  </div>
+  <div class="lgrid">
+    <div class="lcard2" style="--acc:#ff444f;--acc2:#c9302c" onclick="goBroker('dv')">
+      <svg class="lrobot" viewBox="0 0 130 120"><g class="bars"><rect x="100" y="92" width="7" height="16" fill="var(--acc)" opacity=".75"/><rect x="110" y="82" width="7" height="26" fill="var(--acc)" opacity=".85"/><rect x="120" y="72" width="7" height="36" fill="var(--acc)"/></g><g class="rbody"><line x1="62" y1="34" x2="62" y2="20" stroke="var(--acc)" stroke-width="2.5"/><circle class="ant" cx="62" cy="15" r="4.5" fill="var(--acc)"/><rect x="28" y="34" width="68" height="54" rx="14" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="2"/><circle class="eye" cx="46" cy="57" r="6.5" fill="var(--acc)"/><circle class="eye" cx="78" cy="57" r="6.5" fill="var(--acc)"/><rect x="52" y="74" width="20" height="6" rx="3" fill="var(--acc)"/><rect x="12" y="44" width="11" height="36" rx="6" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="1.5"/><rect x="101" y="44" width="11" height="36" rx="6" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="1.5"/></g></svg>
+      <h3 style="color:#ff8a92">DERIV</h3>
+      <div class="sub">Indices synthétiques R_10 à R_250 · connexion directe Deriv, sans abonnement · démo ou réel</div>
+      <button class="btn">🔴 Ouvrir l'espace Deriv</button>
+    </div>
+    <div class="lcard2" style="--acc:#3b82f6;--acc2:#1d4ed8" onclick="goBroker('ma')">
+      <svg class="lrobot" viewBox="0 0 130 120"><g class="bars"><rect x="100" y="92" width="7" height="16" fill="var(--acc)" opacity=".75"/><rect x="110" y="82" width="7" height="26" fill="var(--acc)" opacity=".85"/><rect x="120" y="72" width="7" height="36" fill="var(--acc)"/></g><g class="rbody"><line x1="62" y1="34" x2="62" y2="20" stroke="var(--acc)" stroke-width="2.5"/><circle class="ant" cx="62" cy="15" r="4.5" fill="var(--acc)"/><rect x="28" y="34" width="68" height="54" rx="14" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="2"/><circle class="eye" cx="46" cy="57" r="6.5" fill="var(--acc)"/><circle class="eye" cx="78" cy="57" r="6.5" fill="var(--acc)"/><rect x="52" y="74" width="20" height="6" rx="3" fill="var(--acc)"/><rect x="12" y="44" width="11" height="36" rx="6" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="1.5"/><rect x="101" y="44" width="11" height="36" rx="6" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="1.5"/></g></svg>
+      <h3 style="color:#93c5fd">MT4 / MT5</h3>
+      <div class="sub">Copieur de signaux Telegram + stratégies IA · exécution via MetaAPI sur votre broker MT4/MT5</div>
+      <button class="btn">🔵 Ouvrir l'espace MT4/5</button>
+    </div>
+    <div class="lcard2" style="--acc:#F0B90B;--acc2:#d4a017" onclick="goBroker('bnc')">
+      <svg class="lrobot" viewBox="0 0 130 120"><g class="bars"><rect x="100" y="92" width="7" height="16" fill="var(--acc)" opacity=".75"/><rect x="110" y="82" width="7" height="26" fill="var(--acc)" opacity=".85"/><rect x="120" y="72" width="7" height="36" fill="var(--acc)"/></g><g class="rbody"><line x1="62" y1="34" x2="62" y2="20" stroke="var(--acc)" stroke-width="2.5"/><circle class="ant" cx="62" cy="15" r="4.5" fill="var(--acc)"/><rect x="28" y="34" width="68" height="54" rx="14" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="2"/><circle class="eye" cx="46" cy="57" r="6.5" fill="var(--acc)"/><circle class="eye" cx="78" cy="57" r="6.5" fill="var(--acc)"/><rect x="52" y="74" width="20" height="6" rx="3" fill="var(--acc)"/><rect x="12" y="44" width="11" height="36" rx="6" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="1.5"/><rect x="101" y="44" width="11" height="36" rx="6" fill="rgba(255,255,255,.05)" stroke="var(--acc)" stroke-width="1.5"/></g></svg>
+      <h3 style="color:#F0B90B">BINANCE</h3>
+      <div class="sub">IA Deep Learning (réseau de neurones ×2) · scalping crypto à seuil de confiance · accumulation BTC (DCA)</div>
+      <button class="btn">🟡 Ouvrir l'espace Binance</button>
+    </div>
+  </div>
 </div></div>
 
 <!-- HERO -->
@@ -329,13 +395,15 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 
   <!-- SIDEBAR -->
   <div class="side">
-    <button class="on" data-v="dash" onclick="goView('dash')"><span class="ic">📊</span>Tableau de bord</button>
-    <button data-v="sources" onclick="goView('sources')"><span class="ic">✈️</span>Sources de signaux</button>
-    <button data-v="strategies" onclick="goView('strategies')"><span class="ic">⚡</span>Stratégies IA</button>
-    <button data-v="trades" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
-    <button data-v="bnc" onclick="goView('bnc')"><span class="ic">🪙</span>Binance</button>
-    <button data-v="settings" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--ln)">Poseidon <b style="color:var(--teal)">v3.2</b> — Binance IA</div>
+    <button id="bkHome" data-bk="all" onclick="goHome()" style="display:none"><span class="ic">⌂</span>Accueil brokers</button>
+    <button class="on" data-v="dash" data-bk="ma" onclick="goView('dash')"><span class="ic">📊</span>Tableau de bord</button>
+    <button data-v="sources" data-bk="ma" onclick="goView('sources')"><span class="ic">✈️</span>Sources de signaux</button>
+    <button data-v="strategies" data-bk="ma" onclick="goView('strategies')"><span class="ic">⚡</span>Stratégies IA</button>
+    <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
+    <button data-v="dv" data-bk="dv" onclick="goView('dv')"><span class="ic">🔴</span>Deriv</button>
+    <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🟡</span>Binance</button>
+    <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.0</b> — Multi-broker</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvellement : jamais 🔱</div>
   </div>
@@ -378,7 +446,63 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
   </div>
 
   <!-- ===== SOURCES ===== -->
-  <div class="view" id="v-sources">
+  <div class="view" id="v-dv"><div class="vhead"><h2>🔴 Deriv</h2><span class="sub">Indices synthétiques · connexion directe</span></div>
+  <div class="setcard identcard" style="margin-bottom:14px"><h3>👤 Votre compte vérifié</h3><div id="dvIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2)">Non connecté — collez votre token Deriv ci-dessous puis connectez.</div></div>
+  <div class="setcard" style="grid-column:1/-1">
+        <h3>🟢 Deriv direct — sans abonnement</h3>
+        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Trade les indices de volatilité directement sur ton compte plateforme Deriv, depuis ton navigateur. Zéro MetaAPI, zéro abonnement. Le token reste sur ton téléphone.</p>
+        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
+          <div><label>Token Deriv (droits read + trade)</label><input id="dvToken" type="password" placeholder="pat_..."/></div>
+          <div><label>App ID</label><input id="dvAppId" placeholder="1089"/></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
+          <button class="btn sm" onclick="derivConnect()">Connecter</button>
+          <button class="btn sm ghost" onclick="derivDisconnect()">Déconnecter</button>
+          <button class="btn sm ghost" onclick="dvDiag()">🩺 Diagnostic</button>
+          <select id="dvMult" onchange="S.deriv.multiplier=+this.value;save();dvRender()" style="width:auto">
+            <option value="50">Multiplicateur x50</option>
+            <option value="100" selected>Multiplicateur x100</option>
+            <option value="200">x200</option>
+            <option value="400">x400</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
+          <div class="switch" id="dvTradeSw" onclick="derivToggleTrade()" title="Trading réel Deriv"></div>
+          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les stratégies à trader en réel sur Deriv</span>
+        </div>
+        <div id="dvStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
+        <div id="dvAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
+        <p style="font-size:11px;color:var(--txt3);margin-top:10px">Symboles pour tes stratégies (bouton ✎ sur chaque carte) : R_10, R_25, R_50, R_75, R_100</p>
+      </div>
+</div>
+
+<div class="view" id="v-ma"><div class="vhead"><h2>🔵 MT4 / MT5</h2><span class="sub">Copieur de signaux via MetaAPI</span></div>
+  <div class="setcard identcard" style="margin-bottom:14px"><h3>👤 Votre compte vérifié</h3><div id="maIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2)">Non connecté — collez votre token MetaAPI ci-dessous.</div></div>
+  <div class="setcard" style="grid-column:1/-1">
+        <h3>🔗 Compte MetaAPI — exécution réelle</h3>
+        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Reliez votre compte MT4/MT5 Deriv via MetaAPI. Le token reste dans votre navigateur (localStorage), jamais dans la page partagée.</p>
+        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
+          <div><label>Token MetaAPI</label><input id="maToken" type="password" placeholder="eyJhbGci..."/></div>
+          <div><label>Login / ID du compte</label><input id="maAccId" placeholder="ex: 32083002"/></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
+          <button class="btn sm" onclick="metaTest()"> Tester la connexion</button>
+          <button class="btn sm ghost" onclick="maDeploy(true)"> Redéployer le serveur</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
+          <div class="switch" id="maRealSw" onclick="metaToggleReal()" title="Mode réel"></div>
+          <span style="font-size:12px;color:var(--txt3)">Mode réel (données et ordres réels)</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px">
+          <div class="switch" id="maAiSw" onclick="metaToggleAi()" title="IA en réel"></div>
+          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les signaux IA à trader en réel (sans ce switch, les stratégies n'émettent pas d'ordres réels)</span>
+        </div>
+        <div id="maStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
+        <div id="maAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
+      </div>
+</div>
+
+<div class="view" id="v-sources">
     <div class="vhead"><h2>Sources de signaux</h2><span class="sub">Canaux Telegram, saisie manuelle</span></div>
     <div class="alertbox">⚠️ Mode local : les canaux ci-dessous sont des <b>simulations réalistes</b> (flux de signaux générés en continu). Pour brancher vos vrais canaux Telegram, Poseidon a besoin d'un pont backend (bot Telegram + API broker) — l'interface et le moteur de règles sont prêts. En attendant : utilisez la <b>saisie manuelle</b> et les <b>stratégies IA</b> intégrées.</div>
     <div class="card" style="margin-bottom:14px">
@@ -460,6 +584,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
         <button class="btn sm ghost" onclick="bnDiag()">🩺 Test connexion</button>
       </div>
       <div id="bnRealStatus" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:8px"></div>
+      <div id="bnIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:10px;border-top:1px solid var(--line);padding-top:10px"></div>
     </div>
   </div>
   <div class="setcard" style="margin-top:14px">
@@ -529,54 +654,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
         <div id="mapGrid"></div>
         <button class="btn sm ghost" style="margin-top:6px" onclick="addMap()">+ Ajouter un mapping</button>
       </div>
-      <div class="setcard" style="grid-column:1/-1">
-        <h3>🔗 Compte MetaAPI — exécution réelle</h3>
-        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Reliez votre compte MT4/MT5 Deriv via MetaAPI. Le token reste dans votre navigateur (localStorage), jamais dans la page partagée.</p>
-        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
-          <div><label>Token MetaAPI</label><input id="maToken" type="password" placeholder="eyJhbGci..."/></div>
-          <div><label>Login / ID du compte</label><input id="maAccId" placeholder="ex: 32083002"/></div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
-          <button class="btn sm" onclick="metaTest()"> Tester la connexion</button>
-          <button class="btn sm ghost" onclick="maDeploy(true)"> Redéployer le serveur</button>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
-          <div class="switch" id="maRealSw" onclick="metaToggleReal()" title="Mode réel"></div>
-          <span style="font-size:12px;color:var(--txt3)">Mode réel (données et ordres réels)</span>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px">
-          <div class="switch" id="maAiSw" onclick="metaToggleAi()" title="IA en réel"></div>
-          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les signaux IA à trader en réel (sans ce switch, les stratégies n'émettent pas d'ordres réels)</span>
-        </div>
-        <div id="maStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
-        <div id="maAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
-      </div>
-      <div class="setcard" style="grid-column:1/-1">
-        <h3>🟢 Deriv direct — sans abonnement</h3>
-        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Trade les indices de volatilité directement sur ton compte plateforme Deriv, depuis ton navigateur. Zéro MetaAPI, zéro abonnement. Le token reste sur ton téléphone.</p>
-        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
-          <div><label>Token Deriv (droits read + trade)</label><input id="dvToken" type="password" placeholder="pat_..."/></div>
-          <div><label>App ID</label><input id="dvAppId" placeholder="1089"/></div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
-          <button class="btn sm" onclick="derivConnect()">Connecter</button>
-          <button class="btn sm ghost" onclick="derivDisconnect()">Déconnecter</button>
-          <button class="btn sm ghost" onclick="dvDiag()">🩺 Diagnostic</button>
-          <select id="dvMult" onchange="S.deriv.multiplier=+this.value;save();dvRender()" style="width:auto">
-            <option value="50">Multiplicateur x50</option>
-            <option value="100" selected>Multiplicateur x100</option>
-            <option value="200">x200</option>
-            <option value="400">x400</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
-          <div class="switch" id="dvTradeSw" onclick="derivToggleTrade()" title="Trading réel Deriv"></div>
-          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les stratégies à trader en réel sur Deriv</span>
-        </div>
-        <div id="dvStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
-        <div id="dvAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
-        <p style="font-size:11px;color:var(--txt3);margin-top:10px">Symboles pour tes stratégies (bouton ✎ sur chaque carte) : R_10, R_25, R_50, R_75, R_100</p>
-      </div>
+      
+      
       <div class="setcard" style="grid-column:1/-1">
         <h3>🔧 Données</h3>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -632,7 +711,7 @@ let PRICES={}; for(const s in SYM) PRICES[s]={p:SYM[s].base, hist:[], regime:0, 
 let S=null;
 function defaultState(){
   return {
-    running:true, guard:false, mode:'demo',
+    running:true, guard:false, mode:'demo', broker:'',
     balance:10000, dayKey:todayKey(), dayPnL:0, daySignals:0,
     settings:{riskMode:'usd',riskVal:50,dd:400,ddClose:0,maxTrades:3,opp:1,slOv:'',rr:2.5,be:1,trail:'',h1:0,h2:24,entry:'best'},
     channels:[
@@ -724,7 +803,7 @@ document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')
 function lock(){try{sessionStorage.removeItem('po_unlocked')}catch(e){};location.reload()}
 
 /* ---------- NAVIGATION ---------- */
-function goView(v){
+function goView(v){ navFilter();
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   document.getElementById('v-'+v).classList.add('on');
   document.querySelectorAll('.side button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
@@ -1270,7 +1349,7 @@ function maErr(x){
   if(j.message)return j.message.slice(0,160);
   return 'erreur HTTP '+x.status;
 }
-function maRender(){
+function maRender(){maIdentRender();
   const m=S.meta;
   const tok=document.getElementById('maToken'), aid=document.getElementById('maAccId');
   if(tok&&document.activeElement!==tok){tok.value=m.token; aid.value=m.accountId;}
@@ -1686,7 +1765,7 @@ async function derivSell(cid,why){
   if(r.error){pos.closing=false;toast('Clôture refusée : '+r.error.message,'⚠️');return;}
   toast('Vente '+pos.sym+' exécutée ('+why+') — '+r.sell.sold_for+' '+d.info.currency,'📤');
 }
-function dvRender(){
+function dvRender(){dvIdentRender();
   const d=S.deriv;
   const tk=document.getElementById('dvToken'), ap=document.getElementById('dvAppId'), mu=document.getElementById('dvMult');
   if(tk&&document.activeElement!==tk){tk.value=d.token;ap.value=String(d.appId||'').replace(/\D/g,'')||'1089';mu.value=String(d.multiplier||100);}
@@ -1770,7 +1849,8 @@ async function bnRealTest(){
     if(acc.code!==undefined&&(acc.code<0))throw new Error(acc.msg||('erreur '+acc.code));
     if(!acc.canTrade)throw new Error('Trading désactivé sur ces clés — cochez « Enable Spot & Margin Trading »');
     const usdt=(acc.balances||[]).find(b=>b.asset==='USDT');
-    B.account={canTrade:true,usdt:usdt?+usdt.free:0,updated:Date.now()};
+    const btcB=(acc.balances||[]).find(b=>b.asset==='BTC');
+    B.account={canTrade:true,accountType:acc.accountType||'SPOT',usdt:usdt?+usdt.free:0,btc:btcB?+btcB.free:0,canWithdraw:!!acc.canWithdraw,updated:Date.now()};
     B.on=true; B.status='';
     toast('Mode RÉEL activé ✔ Solde : '+B.account.usdt.toFixed(2)+' USDT','🔴');
   }catch(e){ B.on=false; B.status='✖ '+e.message; toast('Clés refusées : '+e.message,'⚠️'); }
@@ -1810,51 +1890,82 @@ function bnFeat(c,v,i){
   const sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)*(x-m))))};
   const rc=n=>i>=n?c[i]/c[i-n]-1:0;
   let g=0,l=0; for(let k=i-13;k<=i;k++){const d=c[k]-c[k-1]; d>0?g+=d:l-=d;} const rsi=g+l===0?50:100-100/(1+(g/Math.max(l,1e-9)));
-  const e=(n)=>{const a=c.slice(Math.max(0,i-n+1),i+1);const k=2/(n+1);let e=a[0];for(const x of a.slice(1))e=x*k+e*(1-k);return e;};
-  const vf=(v.slice(Math.max(0,i-19),i+1)); const vstd=sd(vf)||1e-9;
-  return [ rc(1), rc(3), rc(15), rsi, (e(9)/e(21)-1), (v[i]-mean(vf))/vstd ];
+  const ema=(n)=>{const a=c.slice(Math.max(0,i-n+1),i+1);const k=2/(n+1);let e=a[0];for(const x of a.slice(1))e=x*k+e*(1-k);return e;};
+  const ema9=ema(9),ema21=ema(21),ema50=ema(50);
+  const vf=v.slice(Math.max(0,i-19),i+1);
+  let tr=0; for(let k=Math.max(1,i-9);k<=i;k++)tr+=Math.abs(c[k]-c[k-1]);
+  const atrp=(tr/Math.min(10,i||1))/(c[i]||1);
+  const body=Math.abs(c[i]-c[i-1])/(c[i]||1e-9);
+  const hi=Math.max(c[i],c[i-1]),lo2=Math.min(c[i],c[i-1]);const rng=(hi-lo2)||1e-9;
+  const wick=(rng-Math.abs(c[i]-c[i-1]))/rng;
+  return [rc(1),rc(3),rc(15),rc(60),rsi/100,(ema9/ema21-1),(ema21/ema50-1),((ema9-ema21)/c[i]),((v[i]-mean(vf))/((sd(vf)||1e-9))),atrp*100,body*100,wick];
 }
+const MLP_H=12;
 async function bnTrain(){
-  const btn=document.getElementById('bnTrainBtn'); if(btn)btn.textContent='⏳ Entraînement…';
+  const btn=document.getElementById('bnTrainBtn'); if(btn)btn.textContent='⏳ Deep learning en cours…';
   try{
-    const syms=['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT']; const X=[],Y=[];
+    const syms=S.bnc.pairs; const X=[],Y=[];
     for(const s of syms){
       const k=await bnKlines(s,1000);
       const c=k.map(x=>+x[4]), v=k.map(x=>+x[6]);
-      for(let i=30;i<c.length-5;i++){
-        X.push(bnFeat(c,v,i)); Y.push(c[i+5]/c[i]-1>0.0015?1:0);
-      }
+      for(let i=60;i<c.length-5;i++){ X.push(bnFeat(c,v,i)); Y.push(c[i+5]/c[i]-1>0.0015?1:0); }
     }
     const n=X.length, dim=X[0].length;
     const mu=Array(dim).fill(0), sg=Array(dim).fill(0);
-    for(let d=0;d<dim;d++)for(let r=0;r<n;r++)mu[d]+=X[r][d]/n;
-    for(let d=0;d<dim;d++){let s=0;for(let r=0;r<n;r++)s+=(X[r][d]-mu[d])**2;sg[d]=Math.sqrt(s/n)||1;}
+    for(let d=0;d<dim;d++){let s2=0;for(let r=0;r<n;r++)s2+=X[r][d];mu[d]=s2/n;s2=0;for(let r=0;r<n;r++)s2+=(X[r][d]-mu[d])**2;sg[d]=Math.sqrt(s2/n)||1;}
     const Z=X.map(r=>r.map((x,d)=>(x-mu[d])/sg[d]));
-    const cut=Math.floor(n*0.8), Ztr=Z.slice(0,cut), Ytr=Y.slice(0,cut), Zv=Z.slice(cut), Yv=Y.slice(cut);
-    let w=Array(dim).fill(0), b=0; const lr=0.3;
-    for(let ep=0;ep<250;ep++){
-      const gw=Array(dim).fill(0); let gb=0;
-      for(let r=0;r<Ztr.length;r++){
-        let z=b; for(let d=0;d<dim;d++)z+=w[d]*Ztr[r][d];
-        const p=1/(1+Math.exp(-z)), e=p-Ytr[r];
-        for(let d=0;d<dim;d++)gw[d]+=e*Ztr[r][d]; gb+=e;
+    const cut=Math.floor(n*0.85);
+    const members=[];
+    for(let mI=0;mI<2;mI++){
+      const W1=[],B1=Array(MLP_H).fill(0);
+      for(let j=0;j<MLP_H;j++)W1.push(Array(dim).fill(0).map(()=>(Math.random()-0.5)*0.8));
+      let W2=Array(MLP_H).fill(0).map(()=>(Math.random()-0.5)*0.8), B2=0;
+      const mW1=W1.map(r=>r.map(()=>0)),mB1=Array(MLP_H).fill(0),mW2=Array(MLP_H).fill(0);let mB2=0;
+      for(let ep=0;ep<50;ep++){
+        const gW1=W1.map(r=>r.map(()=>0)),gB1=Array(MLP_H).fill(0),gW2=Array(MLP_H).fill(0);let gB2=0;
+        for(let r=0;r<cut;r++){
+          const x=Z[r];
+          const h=Array(MLP_H);
+          for(let j=0;j<MLP_H;j++){let s=B1[j];const wr=W1[j];for(let d=0;d<dim;d++)s+=wr[d]*x[d];h[j]=Math.tanh(s);}
+          let z=B2;for(let j=0;j<MLP_H;j++)z+=W2[j]*h[j];
+          const p=1/(1+Math.exp(-z)), e=p-Y[r];
+          gB2+=e;
+          for(let j=0;j<MLP_H;j++){gW2[j]+=e*h[j];const dj=e*(1-h[j]*h[j]);gB1[j]+=dj;const wr=W1[j];for(let d=0;d<dim;d++)gW1[j][d]+=dj*x[d];}
+        }
+        const inv=1/cut, lr=0.5/(1+ep*0.03), mom=0.9;
+        for(let j=0;j<MLP_H;j++){
+          mW2[j]=mom*mW2[j]-lr*gW2[j]*inv; W2[j]+=mW2[j];
+          mB1[j]=mom*mB1[j]-lr*gB1[j]*inv; B1[j]+=mB1[j];
+          mB2=mom*mB2-lr*gB2*inv; B2+=mB2;
+          const wr=W1[j],gr=gW1[j],mr=mW1[j];
+          for(let d=0;d<dim;d++){mr[d]=mom*mr[d]-lr*gr[d]*inv;wr[d]+=mr[d];}
+        }
       }
-      for(let d=0;d<dim;d++)w[d]-=lr*(gw[d]/Ztr.length+0.001*w[d]);
-      b-=lr*gb/Ztr.length;
+      members.push({W1,B1,W2,B2});
     }
-    const acc=m=>{let ok=0;for(let r=0;r<m.Z.length;r++){let z=m.b;for(let d=0;d<dim;d++)z+=m.w[d]*m.Z[r][d];const p=1/(1+Math.exp(-z));if((p>=0.5?1:0)===m.Y[r])ok++;}return ok/m.Z.length;};
-    const aTr=acc({Z:Ztr,Y:Ytr,w,b}), aVa=acc({Z:Zv,Y:Yv,w,b});
-    S.bnc.ml={w,b,mu,sg,samples:n,acc:Math.round(aVa*100),accTr:Math.round(aTr*100),trainedAt:Date.now(),up:Y.filter(y=>y===1).length};
+    const fwd=(x,M)=>{const h=Array(MLP_H);for(let j=0;j<MLP_H;j++){let s=M.B1[j];const wr=M.W1[j];for(let d=0;d<wr.length;d++)s+=wr[d]*x[d];h[j]=Math.tanh(s);}let z=M.B2;for(let j=0;j<MLP_H;j++)z+=M.W2[j]*h[j];return 1/(1+Math.exp(-z));};
+    const predAll=x=>{let s=0;for(const M of members)s+=fwd(x,M);return s/members.length;};
+    let okT=0;for(let r=0;r<cut;r++)if((predAll(Z[r])>=0.5?1:0)===Y[r])okT++;
+    let okV=0;for(let r=cut;r<n;r++)if((predAll(Z[r])>=0.5?1:0)===Y[r])okV++;
+    const acc=Math.round(okV/(n-cut)*100), accTr=Math.round(okT/cut*100);
+    S.bnc.ml={kind:'mlp',members,mu,sg,dim,samples:n,acc,accTr,trainedAt:Date.now(),up:Y.filter(y=>y===1).length};
     save();
-    toast('IA entraînée ✔ '+n+' échantillons — précision validation '+Math.round(aVa*100)+'%','🧠');
+    toast('Réseau de neurones (×2) entraîné ✔ '+n+' échantillons · '+dim+' indicateurs · précision validation '+acc+'%','🧠');
   }catch(e){ toast('Entraînement impossible : '+e.message+' — Binance est-il accessible depuis ce réseau ?','⚠️'); }
   if(btn)btn.textContent='🧠 Entraîner l\'IA';
   bnRender();
 }
 function bnPredict(f){
   const m=S.bnc.ml; if(!m)return null;
-  const z=m.b+f.reduce((a,x,d)=>a+m.w[d]*((x-m.mu[d])/m.sg[d]),0);
-  return 1/(1+Math.exp(-z));
+  const x=f.map((v2,d)=>(v2-m.mu[d])/m.sg[d]);
+  let s=0;
+  for(const M of m.members){
+    const h=Array(M.W1.length);
+    for(let j=0;j<M.W1.length;j++){let t=M.B1[j];const wr=M.W1[j];for(let d=0;d<wr.length;d++)t+=wr[d]*x[d];h[j]=Math.tanh(t);}
+    let z=M.B2;for(let j=0;j<M.W1.length;j++)z+=M.W2[j]*h[j];
+    s+=1/(1+Math.exp(-z));
+  }
+  return s/m.members.length;
 }
 let bnBusy=false;
 async function bnLoop(){
@@ -1987,7 +2098,7 @@ function bnRender(){
   const thr=document.getElementById('bnThr');
   if(thr&&document.activeElement!==thr){thr.value=Math.round(B.conf*100);document.getElementById('bnThrV').textContent=Math.round(B.conf*100)+'%';}
   const mlEl=document.getElementById('bnMl');
-  mlEl.innerHTML=B.ml?('✔ IA entraînée — '+B.ml.samples+' échantillons · précision '+B.ml.acc+'% (train '+B.ml.accTr+'%) · '+hhmm(B.ml.trainedAt)):'IA non entraînée — appuyez sur 🧠 Entraîner (télécharge ~4000 bougies 1 min de Binance et apprend)';
+  mlEl.innerHTML=B.ml?('✔ Réseau de neurones ×2 — '+B.ml.samples+' échantillons · '+B.ml.dim+' indicateurs · précision validation '+B.ml.acc+'% (train '+B.ml.accTr+'%) · '+hhmm(B.ml.trainedAt)):'IA non entraînée — appuyez sur 🧠 : l\'app télécharge ~6000 bougies réelles de 6 paires et entraîne un réseau de neurones ×2 (12 indicateurs par bougie)';
   document.getElementById('bnScalpSw').classList.toggle('on',!!B.scalpOn);
   document.getElementById('bnAccSw').classList.toggle('on',!!B.acc.enabled);
   ['bnPerTrade','bnUsdt'].forEach((id,ix)=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=ix?B.usdt:B.perTrade;});
@@ -2004,6 +2115,11 @@ function bnRender(){
       return '<tr><td><b>'+s.sym+'</b></td><td>'+fmt(s.px,s.px>100?2:5)+'</td><td>'+c+'</td><td>'+sig+'</td></tr>';}).join('')+'</tbody></table>'):'Scanner inactif — entraînez l\u2019IA puis restez sur cette page.';
   const R=B.real;
   ['bnApiKey','bnApiSecret'].forEach(id=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=id==='bnApiKey'?R.apiKey:R.apiSecret;});
+  const bi=document.getElementById('bnIdent');
+  if(bi){
+    const ac=B.real.account;
+    bi.innerHTML=ac?('<b class="up">✔ Compte vérifié — type '+(ac.accountType||'SPOT')+'</b><br/>USDT : <b>'+ac.usdt.toFixed(2)+'</b> · BTC : <b>'+ac.btc.toFixed(8)+'</b><br/>Retraits via API : '+(ac.canWithdraw?'<span class="dn">ACTIVÉS ⚠️ — désactivez-les sur Binance</span>':'désactivés ✔')+'<br/><span style="color:var(--txt3)">Comparez ces soldes avec votre app Binance : si elles correspondent, c\'est bien votre compte.</span>'):'Non vérifié — testez vos clés ci-dessus pour afficher votre compte ici.';
+  }
   const rs=document.getElementById('bnRealStatus');
   if(rs){
     let h=(R.on?'<b style="color:var(--dn)">🔴 MODE RÉEL ACTIF</b> — solde : <b>'+(R.account?R.account.usdt.toFixed(2):'?')+' USDT</b><br/>':'')+(R.status||'Mode démo — les ordres sont simulés.');
@@ -2063,6 +2179,40 @@ function bnRender(){
   }
   draw();
 })();
+/* ---------- v4 : ESPACES BROKERS ---------- */
+function navFilter(){
+  const b=S.broker||'';
+  const home=document.getElementById('bkHome');
+  if(home)home.style.display=b?'flex':'none';
+  document.querySelectorAll('.side button[data-bk]').forEach(p=>{
+    if(p.id==='bkHome')return;
+    p.style.display=(!b||p.dataset.bk==='all'||p.dataset.bk===b)?'flex':'none';
+  });
+}
+function brokerFlow(){
+  const b=S.broker||'';
+  document.body.classList.remove('choosing','launched','th-dv','th-ma','th-bnc');
+  if(!b){ document.body.classList.add('choosing'); try{window.scrollTo(0,0)}catch(e){} return; }
+  document.body.classList.add('launched','th-'+b);
+  navFilter();
+  goView(b==='dv'?'dv':(b==='ma'?'dash':'bnc'));
+}
+function goBroker(b){
+  S.broker=b; save();
+  toast('Espace '+({dv:'Deriv 🔴',ma:'MT4/MT5 🔵',bnc:'Binance 🟡'})[b]+' ouvert','🔱');
+  brokerFlow();
+}
+function goHome(){ document.body.classList.remove('launched'); document.body.classList.add('choosing'); try{window.scrollTo(0,0)}catch(e){} navFilter(); }
+function dvIdentRender(){
+  const el=document.getElementById('dvIdent'); if(!el)return;
+  const i=S.deriv.info;
+  el.innerHTML=i?('✔ Compte vérifié : <b>'+i.login+'</b>'+(i.virtual?' · DÉMO':' · RÉEL')+'<br/>Solde : <b>'+fmt(i.balance,2)+' '+(i.currency||'')+'</b> · '+(i.virtual?'compte virtuel démo':'<span class="dn">COMPTE RÉEL</span>')+'<br/><span style="color:var(--txt3)">Comparez ce login et ce solde avec app.deriv.com pour confirmer que c\'est bien votre compte.</span>'):'Non connecté — collez votre token Deriv ci-dessous puis connectez.';
+}
+function maIdentRender(){
+  const el=document.getElementById('maIdent'); if(!el)return;
+  const i=S.meta.info;
+  el.innerHTML=i?('✔ Compte vérifié : <b>'+(i.login||'?')+'</b>'+(i.name?' · '+i.name:'')+'<br/>Serveur : <b>'+(i.server||'?')+'</b> · Broker : '+(i.broker||'?')+'<br/>Solde : <b>'+fmt(i.balance||0,2)+' '+(i.currency||'')+'</b> · Levier : 1:'+(i.leverage||'?')+'<br/><span style="color:var(--txt3)">Comparez ce numéro de compte avec votre terminal MT4/5 pour confirmer que c\'est bien le vôtre.</span>'):'Non connecté — collez votre token MetaAPI ci-dessous.';
+}
 /* ---------- RENDER GLOBAL ---------- */
 function render(){
   if(!S)return;
@@ -2109,6 +2259,7 @@ function boot(){
   S.meta=Object.assign({token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},S.meta||{});
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
+  S.broker=S.broker||'';
   S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''}},S.bnc||{});
   S.bnc.real=Object.assign({apiKey:'',apiSecret:'',on:false,account:null,status:''},S.bnc.real||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
@@ -2117,6 +2268,7 @@ function boot(){
   if(!S.closed.length&&!S.signals.length) seedDemo();
   // préchauffer les prix
   for(let i=0;i<60;i++)tickPrices();
+  brokerFlow();
   setInterval(bnLoop,15000);
   render(); tickClock();
   // boucle moteur — tick 2s
