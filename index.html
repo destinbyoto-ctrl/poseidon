@@ -9,14 +9,14 @@
 <meta http-equiv="Expires" content="0"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#07080c; --bg2:#0a0a0f; --card:rgba(13,14,19,.82); --card2:rgba(17,17,24,.85); --glass:rgba(13,14,19,.66);
   --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.13);
   --teal:#00c896; --teal2:#009e78; --blue:#00a8ea; --tgram:#229ed9; --gold:#d4af37; --gold2:#f0d060;
   --red:#f0616d; --amber:#f5a524; --txt:#fafafd; --txt2:#c4c4d6; --txt3:#8c8ca6;
-  --disp:'Bebas Neue',Impact,sans-serif; --body:'DM Sans',system-ui,sans-serif; --mono:'JetBrains Mono',Menlo,monospace;
+  --disp:'Space Grotesk',Inter,sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',Menlo,monospace;
   --r:16px; --shadow:0 18px 50px rgba(0,0,0,.45);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -270,6 +270,51 @@ body.th-ma #v-home .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgb
 body.th-bnc #v-home .vhead h2::after{background:linear-gradient(90deg,#F0B90B,transparent)}
 body.th-dv #v-home .vhead h2::after{background:linear-gradient(90deg,#ff444f,transparent)}
 body.th-ma #v-home .vhead h2::after{background:linear-gradient(90deg,#3b82f6,transparent)}
+
+/* ===== v4.2 : TYPO + TAILLES ===== */
+body{font-size:13px}
+h1,h2,h3,.disp{font-weight:600;letter-spacing:.2px}
+.wordmark{font-size:19px}
+.topnav .in{padding:9px 16px}
+.clock{font-size:10.5px}
+.status-pill{font-size:10px;padding:5px 10px}
+#lock .lcard{padding:28px 24px;border-radius:18px}
+#lock .trident{font-size:36px}
+#lock h1{font-size:26px;letter-spacing:2px}
+#lock p{font-size:12px}
+#lock input{font-size:14px;letter-spacing:3px}
+.hero{padding:40px 0 28px}
+.hero h1{font-size:clamp(28px,4.6vw,44px);line-height:1.05}
+.hero p.sub{font-size:13.5px}
+.hstat .v{font-size:22px}
+.hstat .l{font-size:10px}
+section{padding:28px 0}
+.sechead h2{font-size:clamp(20px,3.4vw,30px)}
+.sechead p{font-size:13px}
+.vhead h2{font-size:21px}
+.setcard{padding:13px 15px;border-radius:13px}
+.setcard h3{font-size:13px;letter-spacing:.3px;margin-bottom:9px}
+.side button{font-size:11.5px;padding:8px 10px;gap:8px;border-radius:9px}
+.side .ic{font-size:12px}
+.side .plan{font-size:10px;line-height:1.8}
+.btn{font-size:12.5px;padding:9px 15px;border-radius:10px}
+.btn.sm{font-size:11.5px;padding:6px 11px}
+input,select,textarea{font-size:12.5px;padding:8px 10px;border-radius:9px}
+label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
+.stat .k{font-size:9.5px}
+.stat .v{font-size:15px}
+.stat{padding:10px 12px;border-radius:12px}
+.tbl{font-size:11.5px}
+.toast .t{font-size:12px}
+.lcard2{padding:22px 18px;border-radius:18px}
+.lcard2 h3{font-size:22px}
+.lcard2 .sub{font-size:10.5px;min-height:50px}
+.lrobot{width:110px;height:100px}
+#launcher{padding:36px 16px}
+#launcher h1{font-size:clamp(26px,4.5vw,38px)}
+#launcher .kicker{font-size:10px}
+.switch.big{transform:scale(1.4);margin:6px}
+.bh-grid{gap:11px}
 </style>
 </head>
 <body>
@@ -413,7 +458,7 @@ body.th-ma #v-home .vhead h2::after{background:linear-gradient(90deg,#3b82f6,tra
     <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
     <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🤖</span>Outils IA Binance</button>
     <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.1</b> — Multi-broker</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.2</b> — Multi-broker</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvelement : jamais 🔱</div>
   </div>
@@ -423,6 +468,10 @@ body.th-ma #v-home .vhead h2::after{background:linear-gradient(90deg,#3b82f6,tra
 
   <!-- ===== DASHBOARD ===== -->
   <div class="view" id="v-home"><div class="vhead"><h2 id="bhTitle">Espace</h2><span class="sub" id="bhSub">Tableau de bord du broker</span></div>
+  <div class="setcard" style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:11px 15px">
+    <div><h3 style="margin:0">🤖 Trading autonome — permission de ce broker</h3><div id="bhAutoTxt" class="mono" style="font-size:11px;color:var(--txt2);margin-top:3px"></div></div>
+    <div class="switch big" id="bhAutoSw" onclick="toggleAuto()"></div>
+  </div>
   <div class="bh-grid">
     <div class="setcard"><h3>👤 Informations du compte</h3><div id="bhInfo" class="mono" style="font-size:13px;line-height:1.9;color:var(--txt2)">—</div></div>
     <div class="setcard"><h3>💰 Solde du compte</h3><div id="bhBal" class="mono" style="font-size:24px;margin-top:10px">—</div></div>
@@ -556,7 +605,18 @@ body.th-ma #v-home .vhead h2::after{background:linear-gradient(90deg,#3b82f6,tra
   </div>
   
   
-</div></div>
+</div><div class="setcard">
+      <h3>☁️ Robot serveur — tourne même fermé</h3>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="switch" id="bnSrvSw" onclick="bnSrvToggle()"></div>
+        <span id="bnSrvLbl" style="font-size:12px;color:var(--txt2)">Désarmé</span>
+        <button class="btn sm ghost" onclick="bnSrvCycle()">⚡ Cycle immédiat</button>
+        <button class="btn sm ghost" onclick="bnSrvStatus(true)">🔄 Rafraîchir</button>
+      </div>
+      <div id="bnSrvSt" class="mono" style="font-size:11px;line-height:1.9;color:var(--txt2)"></div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Armé, le robot Binance continue à scanner et trader depuis le serveur toutes les 15 min (TP +0,5% / SL -0,35%, 3 positions max), même app fermée. Il utilise le dernier modèle entraîné et le seuil de l'accueil. Le switch 🤖 ci-dessus ne concerne que l'app dans ton navigateur.</div>
+    </div>
+    </div>
 
 <div class="view" id="v-trades">
     <div class="vhead"><h2>Trades</h2><span class="sub" id="trSub">0 ouverts · 0 clôturés</span></div>
@@ -981,6 +1041,7 @@ function applyEntry(sig){
   return e;
 }
 function executeSignal(sig,src){
+  if(!S.auto||!S.auto.ma){toast('⛔ MT4/5 en pause — active le switch « Trading autonome » sur l\'accueil pour autoriser les ordres','⛔');return;}
   const t0=performance.now();
   sig.entry=applyEntry(sig);
   // SL override / R:R
@@ -1748,6 +1809,7 @@ function dvStake(){
   return Math.max(1,Math.min(s,bal*0.9,1000));
 }
 async function derivExecute(sig,src){
+  if(!S.auto||!S.auto.dv){toast('⛔ Deriv en pause — active le switch « Trading autonome » sur l\'accueil pour autoriser les ordres','⛔');return;}
   const d=S.deriv;
   sig.entry=applyEntry(sig);
   const st=S.settings;
@@ -1974,6 +2036,7 @@ async function bnTrain(){
     const acc=Math.round(okV/(n-cut)*100), accTr=Math.round(okT/cut*100);
     S.bnc.ml={kind:'mlp',members,mu,sg,dim,samples:n,acc,accTr,trainedAt:Date.now(),up:Y.filter(y=>y===1).length};
     save();
+    if(S.bnc.srv&&S.bnc.ml){try{fetch(BN_SRV_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:true,conf:S.bnc.conf,perTrade:S.bnc.perTrade,model:S.bnc.ml})});}catch(e){}}
     toast('Réseau de neurones (×2) entraîné ✔ '+n+' échantillons · '+dim+' indicateurs · précision validation '+acc+'%','🧠');
   }catch(e){ toast('Entraînement impossible : '+e.message+' — Binance est-il accessible depuis ce réseau ?','⚠️'); }
   if(btn)btn.textContent='🧠 Entraîner l\'IA';
@@ -2035,6 +2098,7 @@ function bnClose(pos,px){
   return pnl;
 }
 async function bnManageScalp(scans){
+  if(!S.auto||!S.auto.bnc)return;
   const B=S.bnc;
   if(!scans.length)return;
   // clôtures SL/TP
@@ -2084,6 +2148,7 @@ async function bnManageScalp(scans){
   }
 }
 async function bnAccTick(scans){
+  if(!S.auto||!S.auto.bnc)return;
   const A=S.bnc.acc, B=S.bnc;
   if(!A.enabled)return;
   const btc=scans.find(s=>s.sym==='BTCUSDT'); if(!btc)return;
@@ -2116,6 +2181,7 @@ async function bnAccTick(scans){
   toast('🪙 Accumulation : '+A.perBuy+' USDT de BTC achetés à '+px.toLocaleString()+' $'+(dip?' (renfort baisse)':''),'🪙');
 }
 function bnRender(){
+  bnSrvRender(); bnSrvStatus();
   const B=S.bnc;
   if(!document.getElementById('bnStatus'))return;
   document.getElementById('bnStatus').innerHTML='<span class="'+(B.status.startsWith('Binance OK')?'up':'dn')+'">'+B.status+'</span> · Solde démo : <b>'+fmt(B.usdt,2)+' USDT</b>';
@@ -2241,7 +2307,78 @@ function maIdentRender(){
 function bhStrat(){
   return S.strategies.map(s=>'<div>'+(s.on?'🟢':'⚫')+' <b>'+s.name+'</b> — '+s.sym+' <span style="color:var(--txt3)">'+(s.on?'actif':'en pause')+'</span></div>').join('')||'<span style="color:var(--txt3)">Aucune stratégie — activez-en une dans « Stratégies IA ».</span>';
 }
+/* ===== v4.2 : AUTONOMIE + ROBOT SERVEUR BINANCE ===== */
+function autoRender(){
+  const b=S.broker; if(!b)return;
+  S.auto=S.auto||{};
+  const sw=document.getElementById('bhAutoSw'),at=document.getElementById('bhAutoTxt');
+  if(!sw)return;
+  sw.classList.toggle('on',!!S.auto[b]);
+  const nm=({dv:'Deriv',ma:'MT4/MT5',bnc:'Binance'})[b]||b;
+  at.innerHTML=S.auto[b]?('<span class="up">ON — '+nm+' a la permission de trader (démo et réel)</span>'):('<span style="color:var(--amber)">OFF — '+nm+' ne peut PAS trader, même en démo. Chaque broker a son propre switch ici.</span>');
+}
+function toggleAuto(){
+  const b=S.broker; if(!b)return;
+  S.auto=S.auto||{}; S.auto[b]=!S.auto[b];
+  save();
+  toast('Trading autonome '+(S.auto[b]?'AUTORISÉ ✔':'révoqué')+' pour '+({dv:'Deriv',ma:'MT4/MT5',bnc:'Binance'})[b],S.auto[b]?'🤖':'⏸️');
+  bhRender();
+}
+const BN_SRV_URL='https://solene-2b460792.base44.app/functions/bnServerCtl';
+async function bnSrvToggle(){
+  const on=!S.bnc.srv;
+  if(on&&(!S.bnc.ml)){toast("⚠️ Entraîne d'abord l'IA (🧠) avant d'armer le robot serveur",'⚠️');return;}
+  try{
+    const payload={enabled:on,conf:S.bnc.conf,perTrade:S.bnc.perTrade,usdt:S.bnc.usdt,mode:(S.bnc.real&&S.bnc.real.on)?'real':'paper'};
+    if(on)payload.model=S.bnc.ml;
+    const r=await fetch(BN_SRV_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j=await r.json();
+    if(!j.ok){toast('Serveur : '+(j.reason||'erreur'),'⚠️');return;}
+    S.bnc.srv=on; save();
+    toast(j.note,'☁️');
+  }catch(e){toast('Serveur injoignable : '+e.message,'⚠️');}
+  bnSrvRender(); bnSrvStatus(true);
+}
+async function bnSrvCycle(){
+  try{
+    const r=await fetch(BN_SRV_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'cycle'})});
+    const j=await r.json();
+    if(j.ok){toast('☁️ '+j.lastResult,'☁️');}
+    else{toast('Serveur : '+(j.reason||'désarmé'),'ℹ️');}
+  }catch(e){toast('Serveur injoignable','⚠️');}
+  bnSrvStatus(true);
+}
+let _srvFetchT=0;
+async function bnSrvStatus(force){
+  const now=Date.now();
+  if(!force&&now-_srvFetchT<30000)return;
+  _srvFetchT=now;
+  try{
+    const r=await fetch(BN_SRV_URL);
+    window._srvSt=await r.json();
+    bnSrvRender();
+  }catch(e){}
+}
+function bnSrvRender(){
+  const sw=document.getElementById('bnSrvSw'),lb=document.getElementById('bnSrvLbl'),st=document.getElementById('bnSrvSt');
+  if(!sw)return;
+  sw.classList.toggle('on',!!S.bnc.srv);
+  if(lb)lb.textContent=S.bnc.srv?'ARMÉ — tourne même fermé ✔':'Désarmé';
+  const j=window._srvSt;
+  if(!st)return;
+  if(!j){st.innerHTML="Chargement de l'état serveur…";return;}
+  const realOn=S.bnc.real&&S.bnc.real.on;
+  st.innerHTML=
+    'Serveur : '+(j.enabled?'<span class="up">ARMÉ</span>':'<span style="color:var(--amber)">désarmé</span>')+
+    ' · mode '+(j.mode==='real'?'<span class="up">RÉEL</span>':'papier')+
+    ' · solde suivi '+(typeof j.usdt==='number'?j.usdt.toFixed(2):'—')+' USDT<br/>'+
+    'Modèle IA : '+(j.hasModel?'✔ chargé':'absent')+' · seuil '+Math.round((j.conf||0.62)*100)+'% · positions '+((j.positions||[]).length)+'/3'+
+    (realOn?' · <span class="up">clés API réelles intégrées au serveur</span>':'')+'<br/>'+
+    (j.lastCycle?('Dernier cycle : '+new Date(j.lastCycle).toLocaleTimeString('fr-FR')+' — '+j.lastResult):'Aucun cycle encore');
+}
+
 function bhRender(){
+  autoRender();
   const b=S.broker; if(!b)return;
   const ti=document.getElementById('bhTitle'); if(!ti)return;
   ti.textContent=({dv:'🔴 Deriv',ma:'🔵 MT4 / MT5',bnc:'🟡 Binance'})[b];
@@ -2328,6 +2465,7 @@ function boot(){
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
   S.broker=S.broker||'';
   S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''}},S.bnc||{});
+  S.bnc.srv=!!S.bnc.srv; S.auto=Object.assign({dv:false,ma:false,bnc:false},S.auto||{});
   S.bnc.real=Object.assign({apiKey:'',apiSecret:'',on:false,account:null,status:''},S.bnc.real||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
