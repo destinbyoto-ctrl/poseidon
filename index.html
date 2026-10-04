@@ -260,6 +260,16 @@ body.th-ma #v-ma .btn.ghost{color:#93c5fd;border-color:rgba(59,130,246,.4);backg
 body.th-ma #v-ma .vhead h2::after{background:linear-gradient(90deg,#3b82f6,transparent)}
 body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.6)}
 .identcard{border:1px solid rgba(0,200,150,.3);background:rgba(0,200,150,.05)}
+
+/* ===== v4.1 : ACCUEIL BROKER ===== */
+.bh-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:860px){.bh-grid{grid-template-columns:1fr}}
+body.th-bnc #v-home .setcard h3::before{background:#F0B90B;box-shadow:0 0 8px rgba(240,185,11,.6)}
+body.th-dv #v-home .setcard h3::before{background:#ff444f;box-shadow:0 0 8px rgba(255,68,79,.6)}
+body.th-ma #v-home .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.6)}
+body.th-bnc #v-home .vhead h2::after{background:linear-gradient(90deg,#F0B90B,transparent)}
+body.th-dv #v-home .vhead h2::after{background:linear-gradient(90deg,#ff444f,transparent)}
+body.th-ma #v-home .vhead h2::after{background:linear-gradient(90deg,#3b82f6,transparent)}
 </style>
 </head>
 <body>
@@ -395,24 +405,48 @@ body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(
 
   <!-- SIDEBAR -->
   <div class="side">
-    <button id="bkHome" data-bk="all" onclick="goHome()" style="display:none"><span class="ic">⌂</span>Accueil brokers</button>
-    <button class="on" data-v="dash" data-bk="ma" onclick="goView('dash')"><span class="ic">📊</span>Tableau de bord</button>
-    <button data-v="sources" data-bk="ma" onclick="goView('sources')"><span class="ic">✈️</span>Sources de signaux</button>
-    <button data-v="strategies" data-bk="ma" onclick="goView('strategies')"><span class="ic">⚡</span>Stratégies IA</button>
+    <button id="bkHome" data-bk="all" onclick="goHome()" style="display:none"><span class="ic">⌂</span>Choix du broker</button>
+    <button data-v="home" data-bk="dv ma bnc" onclick="goView('home')"><span class="ic">🏠</span>Accueil</button>
+    <button data-v="dash" data-bk="ma" onclick="goView('dash')"><span class="ic">📊</span>Copieur</button>
+    <button data-v="sources" data-bk="ma" onclick="goView('sources')"><span class="ic">✈️</span>Sources</button>
+    <button data-v="strategies" data-bk="ma dv" onclick="goView('strategies')"><span class="ic">⚡</span>Stratégies IA</button>
     <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
-    <button data-v="dv" data-bk="dv" onclick="goView('dv')"><span class="ic">🔴</span>Deriv</button>
-    <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🟡</span>Binance</button>
+    <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🤖</span>Outils IA Binance</button>
     <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.0</b> — Multi-broker</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.1</b> — Multi-broker</div>
     <div class="sep"></div>
-    <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvellement : jamais 🔱</div>
+    <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvelement : jamais 🔱</div>
   </div>
 
   <!-- MAIN -->
   <div class="main">
 
   <!-- ===== DASHBOARD ===== -->
-  <div class="view on" id="v-dash">
+  <div class="view" id="v-home"><div class="vhead"><h2 id="bhTitle">Espace</h2><span class="sub" id="bhSub">Tableau de bord du broker</span></div>
+  <div class="bh-grid">
+    <div class="setcard"><h3>👤 Informations du compte</h3><div id="bhInfo" class="mono" style="font-size:13px;line-height:1.9;color:var(--txt2)">—</div></div>
+    <div class="setcard"><h3>💰 Solde du compte</h3><div id="bhBal" class="mono" style="font-size:24px;margin-top:10px">—</div></div>
+    <div class="setcard"><h3>📈 P&L réalisé</h3><div id="bhPnl" class="mono" style="font-size:24px;margin-top:10px">—</div></div>
+    <div class="setcard"><h3>🌊 P&L flottant</h3><div id="bhFloat" class="mono" style="font-size:24px;margin-top:10px">—</div></div>
+  </div>
+  <div id="bhScanWrap">
+    <div id="bhScan-dv" class="setcard" style="display:none"><h3>📡 Scanner IA — stratégies actives</h3><div id="bhScanDv" class="mono" style="font-size:12.5px;line-height:2;color:var(--txt2)"></div></div>
+    <div id="bhScan-ma" class="setcard" style="display:none"><h3>📡 Scanner IA — stratégies actives</h3><div id="bhScanMa" class="mono" style="font-size:12.5px;line-height:2;color:var(--txt2)"></div></div>
+    <div id="bhScan-bnc" style="display:none"><div class="setcard" style="margin-top:14px">
+    <h3>📡 Scanner IA en direct</h3>
+    <div id="bnScan" style="font-size:12px;color:var(--txt3)">Scanner inactif — entraînez l'IA puis activez le scalpeur, ou ouvrez cette page.</div>
+      <div style="margin-top:12px"><label>Seuil de confiance : <b id="bnThrV"></b></label>
+      <input type="range" min="55" max="85" value="62" id="bnThr" style="width:100%" oninput="S.bnc.conf=this.value/100;document.getElementById('bnThrV').textContent=this.value+'%';save()"></div>
+  </div><div class="setcard" style="margin-top:14px">
+    <h3>📋 Scalps &amp; achats d'accumulation</h3>
+    <div style="overflow-x:auto"><table class="tab"><thead><tr><th>Heure</th><th>Type</th><th>Paire</th><th>Sens</th><th>Montant</th><th>Entrée</th><th>Sortie</th><th>P&L</th></tr></thead>
+    <tbody id="bnLog"></tbody></table></div>
+  </div></div>
+  </div>
+  <div id="bhHistWrap" class="setcard" style="margin-top:14px"><h3>Historique des trades</h3><div id="bhHist" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);max-height:320px;overflow-y:auto"></div></div>
+</div>
+
+<div class="view on" id="v-dash">
     <div class="vhead"><h2>Tableau de bord</h2><span class="sub" id="dashTime">—</span><div class="spacer"></div><span class="badge" id="dashMode">MODE DÉMO</span></div>
     <div class="statusrow">
       <div class="stbox"><span class="dot" style="color:var(--teal)"></span><div><div class="nm">Moteur</div><div class="st up" id="stEngine">EN LIGNE · synchronisé</div></div></div>
@@ -446,61 +480,9 @@ body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(
   </div>
 
   <!-- ===== SOURCES ===== -->
-  <div class="view" id="v-dv"><div class="vhead"><h2>🔴 Deriv</h2><span class="sub">Indices synthétiques · connexion directe</span></div>
-  <div class="setcard identcard" style="margin-bottom:14px"><h3>👤 Votre compte vérifié</h3><div id="dvIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2)">Non connecté — collez votre token Deriv ci-dessous puis connectez.</div></div>
-  <div class="setcard" style="grid-column:1/-1">
-        <h3>🟢 Deriv direct — sans abonnement</h3>
-        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Trade les indices de volatilité directement sur ton compte plateforme Deriv, depuis ton navigateur. Zéro MetaAPI, zéro abonnement. Le token reste sur ton téléphone.</p>
-        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
-          <div><label>Token Deriv (droits read + trade)</label><input id="dvToken" type="password" placeholder="pat_..."/></div>
-          <div><label>App ID</label><input id="dvAppId" placeholder="1089"/></div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
-          <button class="btn sm" onclick="derivConnect()">Connecter</button>
-          <button class="btn sm ghost" onclick="derivDisconnect()">Déconnecter</button>
-          <button class="btn sm ghost" onclick="dvDiag()">🩺 Diagnostic</button>
-          <select id="dvMult" onchange="S.deriv.multiplier=+this.value;save();dvRender()" style="width:auto">
-            <option value="50">Multiplicateur x50</option>
-            <option value="100" selected>Multiplicateur x100</option>
-            <option value="200">x200</option>
-            <option value="400">x400</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
-          <div class="switch" id="dvTradeSw" onclick="derivToggleTrade()" title="Trading réel Deriv"></div>
-          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les stratégies à trader en réel sur Deriv</span>
-        </div>
-        <div id="dvStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
-        <div id="dvAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
-        <p style="font-size:11px;color:var(--txt3);margin-top:10px">Symboles pour tes stratégies (bouton ✎ sur chaque carte) : R_10, R_25, R_50, R_75, R_100</p>
-      </div>
-</div>
+  
 
-<div class="view" id="v-ma"><div class="vhead"><h2>🔵 MT4 / MT5</h2><span class="sub">Copieur de signaux via MetaAPI</span></div>
-  <div class="setcard identcard" style="margin-bottom:14px"><h3>👤 Votre compte vérifié</h3><div id="maIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2)">Non connecté — collez votre token MetaAPI ci-dessous.</div></div>
-  <div class="setcard" style="grid-column:1/-1">
-        <h3>🔗 Compte MetaAPI — exécution réelle</h3>
-        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Reliez votre compte MT4/MT5 Deriv via MetaAPI. Le token reste dans votre navigateur (localStorage), jamais dans la page partagée.</p>
-        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
-          <div><label>Token MetaAPI</label><input id="maToken" type="password" placeholder="eyJhbGci..."/></div>
-          <div><label>Login / ID du compte</label><input id="maAccId" placeholder="ex: 32083002"/></div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
-          <button class="btn sm" onclick="metaTest()"> Tester la connexion</button>
-          <button class="btn sm ghost" onclick="maDeploy(true)"> Redéployer le serveur</button>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
-          <div class="switch" id="maRealSw" onclick="metaToggleReal()" title="Mode réel"></div>
-          <span style="font-size:12px;color:var(--txt3)">Mode réel (données et ordres réels)</span>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px">
-          <div class="switch" id="maAiSw" onclick="metaToggleAi()" title="IA en réel"></div>
-          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les signaux IA à trader en réel (sans ce switch, les stratégies n'émettent pas d'ordres réels)</span>
-        </div>
-        <div id="maStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
-        <div id="maAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
-      </div>
-</div>
+
 
 <div class="view" id="v-sources">
     <div class="vhead"><h2>Sources de signaux</h2><span class="sub">Canaux Telegram, saisie manuelle</span></div>
@@ -543,8 +525,7 @@ body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(
       <h3>🤖 Modèle IA (Machine Learning)</h3>
       <div id="bnMl" class="mono" style="font-size:12px;line-height:2;color:var(--txt2)"></div>
       <button class="btn sm" onclick="bnTrain()" id="bnTrainBtn">🧠 Entraîner l'IA</button>
-      <div style="margin-top:12px"><label>Seuil de confiance : <b id="bnThrV"></b></label>
-      <input type="range" min="55" max="85" value="62" id="bnThr" style="width:100%" oninput="S.bnc.conf=this.value/100;document.getElementById('bnThrV').textContent=this.value+'%';save()"></div>
+      
     </div>
     <div class="setcard">
       <h3>📈 Scalpeur IA</h3>
@@ -571,31 +552,10 @@ body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(
       </div>
       <div id="bnAccStats" class="mono" style="font-size:12px;line-height:2;color:var(--teal);margin-top:8px"></div>
     </div>
-  <div class="setcard">
-      <h3>🔑 Compte Binance réel</h3>
-      <div style="font-size:12px;color:var(--txt3);line-height:1.6;margin-bottom:10px">Créez la clé sur binance.com → Profil → API Management : activez « Enable Spot &amp; Margin Trading », laissez les retraits désactivés, et ne mettez aucune restriction IP. Testez d'abord en démo quelques jours.</div>
-      <div class="frow" style="grid-template-columns:1fr 1fr">
-        <div><label>Clé API</label><input type="text" id="bnApiKey" placeholder="Clé API (64 caractères)" autocomplete="off"></div>
-        <div><label>Secret API</label><input type="password" id="bnApiSecret" placeholder="Secret API" autocomplete="off"></div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn sm" onclick="bnRealTest()" id="bnRealBtn">🔴 Tester &amp; activer le réel</button>
-        <button class="btn sm ghost" onclick="bnRealOff()">🟢 Revenir en démo</button>
-        <button class="btn sm ghost" onclick="bnDiag()">🩺 Test connexion</button>
-      </div>
-      <div id="bnRealStatus" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:8px"></div>
-      <div id="bnIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:10px;border-top:1px solid var(--line);padding-top:10px"></div>
-    </div>
+  
   </div>
-  <div class="setcard" style="margin-top:14px">
-    <h3>📡 Scanner IA en direct</h3>
-    <div id="bnScan" style="font-size:12px;color:var(--txt3)">Scanner inactif — entraînez l'IA puis activez le scalpeur, ou ouvrez cette page.</div>
-  </div>
-  <div class="setcard" style="margin-top:14px">
-    <h3>📋 Scalps &amp; achats d'accumulation</h3>
-    <div style="overflow-x:auto"><table class="tab"><thead><tr><th>Heure</th><th>Type</th><th>Paire</th><th>Sens</th><th>Montant</th><th>Entrée</th><th>Sortie</th><th>P&L</th></tr></thead>
-    <tbody id="bnLog"></tbody></table></div>
-  </div>
+  
+  
 </div></div>
 
 <div class="view" id="v-trades">
@@ -664,7 +624,71 @@ body.th-ma #v-ma .setcard h3::before{background:#3b82f6;box-shadow:0 0 8px rgba(
         </div>
         <p style="font-size:11.5px;color:var(--txt3);margin-top:10px">Tout est stocké localement dans votre navigateur (localStorage). Aucune donnée ne quitte cet appareil.</p>
       </div>
+    
+    <div class="setcard" style="grid-column:1/-1">
+        <h3>🟢 Deriv direct — sans abonnement</h3>
+        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Trade les indices de volatilité directement sur ton compte plateforme Deriv, depuis ton navigateur. Zéro MetaAPI, zéro abonnement. Le token reste sur ton téléphone.</p>
+        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
+          <div><label>Token Deriv (droits read + trade)</label><input id="dvToken" type="password" placeholder="pat_..."/></div>
+          <div><label>App ID</label><input id="dvAppId" placeholder="1089"/></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
+          <button class="btn sm" onclick="derivConnect()">Connecter</button>
+          <button class="btn sm ghost" onclick="derivDisconnect()">Déconnecter</button>
+          <button class="btn sm ghost" onclick="dvDiag()">🩺 Diagnostic</button>
+          <select id="dvMult" onchange="S.deriv.multiplier=+this.value;save();dvRender()" style="width:auto">
+            <option value="50">Multiplicateur x50</option>
+            <option value="100" selected>Multiplicateur x100</option>
+            <option value="200">x200</option>
+            <option value="400">x400</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
+          <div class="switch" id="dvTradeSw" onclick="derivToggleTrade()" title="Trading réel Deriv"></div>
+          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les stratégies à trader en réel sur Deriv</span>
+        </div>
+        <div id="dvStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
+        <div id="dvAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
+        <p style="font-size:11px;color:var(--txt3);margin-top:10px">Symboles pour tes stratégies (bouton ✎ sur chaque carte) : R_10, R_25, R_50, R_75, R_100</p>
+      </div>
+    <div class="setcard" style="grid-column:1/-1">
+        <h3>🔗 Compte MetaAPI — exécution réelle</h3>
+        <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Reliez votre compte MT4/MT5 Deriv via MetaAPI. Le token reste dans votre navigateur (localStorage), jamais dans la page partagée.</p>
+        <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
+          <div><label>Token MetaAPI</label><input id="maToken" type="password" placeholder="eyJhbGci..."/></div>
+          <div><label>Login / ID du compte</label><input id="maAccId" placeholder="ex: 32083002"/></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px">
+          <button class="btn sm" onclick="metaTest()"> Tester la connexion</button>
+          <button class="btn sm ghost" onclick="maDeploy(true)"> Redéployer le serveur</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
+          <div class="switch" id="maRealSw" onclick="metaToggleReal()" title="Mode réel"></div>
+          <span style="font-size:12px;color:var(--txt3)">Mode réel (données et ordres réels)</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px">
+          <div class="switch" id="maAiSw" onclick="metaToggleAi()" title="IA en réel"></div>
+          <span style="font-size:12px;color:var(--txt3)">🤖 Autoriser les signaux IA à trader en réel (sans ce switch, les stratégies n'émettent pas d'ordres réels)</span>
+        </div>
+        <div id="maStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
+        <div id="maAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
+      </div>
+    <div class="setcard">
+      <h3>🔑 Compte Binance réel</h3>
+      <div style="font-size:12px;color:var(--txt3);line-height:1.6;margin-bottom:10px">Créez la clé sur binance.com → Profil → API Management : activez « Enable Spot &amp; Margin Trading », laissez les retraits désactivés, et ne mettez aucune restriction IP. Testez d'abord en démo quelques jours.</div>
+      <div class="frow" style="grid-template-columns:1fr 1fr">
+        <div><label>Clé API</label><input type="text" id="bnApiKey" placeholder="Clé API (64 caractères)" autocomplete="off"></div>
+        <div><label>Secret API</label><input type="password" id="bnApiSecret" placeholder="Secret API" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn sm" onclick="bnRealTest()" id="bnRealBtn">🔴 Tester &amp; activer le réel</button>
+        <button class="btn sm ghost" onclick="bnRealOff()">🟢 Revenir en démo</button>
+        <button class="btn sm ghost" onclick="bnDiag()">🩺 Test connexion</button>
+      </div>
+      <div id="bnRealStatus" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:8px"></div>
+      <div id="bnIdent" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:10px;border-top:1px solid var(--line);padding-top:10px"></div>
     </div>
+  </div>
   </div>
 
   </div><!-- /main -->
@@ -803,7 +827,7 @@ document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')
 function lock(){try{sessionStorage.removeItem('po_unlocked')}catch(e){};location.reload()}
 
 /* ---------- NAVIGATION ---------- */
-function goView(v){ navFilter();
+function goView(v){ navFilter(); if(v==='home'){try{bhRender()}catch(e){}}
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   document.getElementById('v-'+v).classList.add('on');
   document.querySelectorAll('.side button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
@@ -1970,7 +1994,7 @@ function bnPredict(f){
 let bnBusy=false;
 async function bnLoop(){
   const B=S.bnc;
-  const active=document.getElementById('v-bnc').classList.contains('on')||B.scalpOn||B.acc.enabled;
+  const active=B.scalpOn||B.acc.enabled||(S.broker==='bnc'&&(document.getElementById('v-bnc').classList.contains('on')||document.getElementById('v-home').classList.contains('on')));
   if(!active||bnBusy)return;
   bnBusy=true;
   try{
@@ -2186,7 +2210,8 @@ function navFilter(){
   if(home)home.style.display=b?'flex':'none';
   document.querySelectorAll('.side button[data-bk]').forEach(p=>{
     if(p.id==='bkHome')return;
-    p.style.display=(!b||p.dataset.bk==='all'||p.dataset.bk===b)?'flex':'none';
+    const bks=(p.dataset.bk||'all').split(' ');
+    p.style.display=(bks.includes('all')||(b&&bks.includes(b)))?'flex':'none';
   });
 }
 function brokerFlow(){
@@ -2195,7 +2220,7 @@ function brokerFlow(){
   if(!b){ document.body.classList.add('choosing'); try{window.scrollTo(0,0)}catch(e){} return; }
   document.body.classList.add('launched','th-'+b);
   navFilter();
-  goView(b==='dv'?'dv':(b==='ma'?'dash':'bnc'));
+  goView('home');
 }
 function goBroker(b){
   S.broker=b; save();
@@ -2213,8 +2238,50 @@ function maIdentRender(){
   const i=S.meta.info;
   el.innerHTML=i?('✔ Compte vérifié : <b>'+(i.login||'?')+'</b>'+(i.name?' · '+i.name:'')+'<br/>Serveur : <b>'+(i.server||'?')+'</b> · Broker : '+(i.broker||'?')+'<br/>Solde : <b>'+fmt(i.balance||0,2)+' '+(i.currency||'')+'</b> · Levier : 1:'+(i.leverage||'?')+'<br/><span style="color:var(--txt3)">Comparez ce numéro de compte avec votre terminal MT4/5 pour confirmer que c\'est bien le vôtre.</span>'):'Non connecté — collez votre token MetaAPI ci-dessous.';
 }
+function bhStrat(){
+  return S.strategies.map(s=>'<div>'+(s.on?'🟢':'⚫')+' <b>'+s.name+'</b> — '+s.sym+' <span style="color:var(--txt3)">'+(s.on?'actif':'en pause')+'</span></div>').join('')||'<span style="color:var(--txt3)">Aucune stratégie — activez-en une dans « Stratégies IA ».</span>';
+}
+function bhRender(){
+  const b=S.broker; if(!b)return;
+  const ti=document.getElementById('bhTitle'); if(!ti)return;
+  ti.textContent=({dv:'🔴 Deriv',ma:'🔵 MT4 / MT5',bnc:'🟡 Binance'})[b];
+  ['dv','ma','bnc'].forEach(x=>{const el=document.getElementById('bhScan-'+x); if(el)el.style.display=x===b?'block':'none';});
+  const info=document.getElementById('bhInfo'),bal=document.getElementById('bhBal'),pn=document.getElementById('bhPnl'),fl=document.getElementById('bhFloat'),hw=document.getElementById('bhHistWrap'),hist=document.getElementById('bhHist');
+  let acc='',bl='',rp=0,fp=0,rows='',histVisible=true;
+  if(b==='dv'){
+    const d=S.deriv,i=d.info;
+    acc=i?('<b class="up">✔ '+i.login+'</b>'+(i.virtual?' · DÉMO':' · <span class="dn">RÉEL</span>')+(i.currency?' · '+i.currency:'')):'Non connecté — connectez dans Réglages';
+    bl=i?fmt(i.balance,2)+' '+(i.currency||''):'—';
+    rp=(d.closed||[]).reduce((a,c)=>a+(+c.profit||0),0);
+    fp=(d.positions||[]).reduce((a,c)=>a+(+c.profit||0),0);
+    rows=(d.closed||[]).slice(0,40).map(c=>hhmm(c.t)+' · '+c.sym+' · '+c.side+' · '+c.stake+' → <span class="'+(c.profit>=0?'up':'dn')+'">'+(c.profit>=0?'+':'')+(+c.profit).toFixed(2)+'</span>').join('<br/>');
+    const sd=document.getElementById('bhScanDv'); if(sd)sd.innerHTML=bhStrat();
+  }else if(b==='ma'){
+    const i=S.meta.info;
+    acc=i?('<b class="up">✔ '+(i.login||'?')+'</b>'+(i.name?' · '+i.name:'')+(i.server?' · '+i.server:'')):'Non connecté — connectez dans Réglages';
+    bl=i?fmt(i.balance||0,2)+' '+(i.currency||''):(fmt(S.balance,2)+' USD <span style="color:var(--txt3)">(démo)</span>');
+    rp=(S.closed||[]).reduce((a,c)=>a+(+(c.pnl||0)),0);
+    fp=((S.meta.positions||[]).reduce((a,c)=>a+(+(c.pnl||0)),0))+((S.open||[]).reduce((a,c)=>a+(+(c.pnl||0)),0));
+    rows=(S.closed||[]).slice(0,40).map(c=>hhmm(c.t)+' · '+c.src+' · '+c.sym+' '+c.side+' · <span class="'+(c.pnl>=0?'up':'dn')+'">'+(c.pnl>=0?'+':'')+fmt(c.pnl,2)+'</span> ('+c.why+')').join('<br/>');
+    const sd=document.getElementById('bhScanMa'); if(sd)sd.innerHTML=bhStrat();
+  }else{
+    const B=S.bnc,R=B.real;
+    acc=(R.on&&R.account)?('<b class="up">✔ '+(R.account.accountType||'SPOT')+'</b> · <span class="dn">RÉEL</span>'):'Démo locale — clés API dans Réglages';
+    bl=(R.on&&R.account)?(R.account.usdt.toFixed(2)+' USDT <span class="dn">RÉEL</span>'):(fmt(B.usdt,2)+' USDT <span style="color:var(--txt3)">(démo)</span>');
+    rp=(B.trades||[]).reduce((a,c)=>a+(c.pnl||0),0);
+    fp=(B.open||[]).reduce((a,p)=>{const sc=(B.scans||[]).find(s=>s.sym===p.sym);return a+(sc?(sc.px-p.entry)*p.qty:0);},0);
+    histVisible=false;
+  }
+  if(hw)hw.style.display=histVisible?'block':'none';
+  if(info)info.innerHTML=acc;
+  if(bal)bal.innerHTML=bl;
+  const cl=v=>v>=0?'up':'dn';
+  if(pn)pn.innerHTML='<span class="'+cl(rp)+'">'+(rp>=0?'+':'')+fmt(rp,2)+'</span>';
+  if(fl)fl.innerHTML='<span class="'+cl(fp)+'">'+(fp>=0?'+':'')+fmt(fp,2)+'</span>';
+  if(hist)hist.innerHTML=rows||'Aucun trade pour le moment.';
+}
 /* ---------- RENDER GLOBAL ---------- */
-function render(){
+function render(){ try{bhRender()}catch(e){}
   if(!S)return;
   renderDash();renderChannels();renderStrats();renderTrades();renderSettings();maRender();dvRender();bnRender();
 }
@@ -2270,6 +2337,7 @@ function boot(){
   for(let i=0;i<60;i++)tickPrices();
   brokerFlow();
   setInterval(bnLoop,15000);
+  setInterval(bhRender,5000);
   render(); tickClock();
   // boucle moteur — tick 2s
   let last=Date.now();
