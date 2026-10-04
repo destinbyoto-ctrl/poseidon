@@ -316,6 +316,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
     <button data-v="sources" onclick="goView('sources')"><span class="ic">✈️</span>Sources de signaux</button>
     <button data-v="strategies" onclick="goView('strategies')"><span class="ic">⚡</span>Stratégies IA</button>
     <button data-v="trades" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
+    <button data-v="bnc" onclick="goView('bnc')"><span class="ic">🪙</span>Binance</button>
     <button data-v="settings" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvellement : jamais 🔱</div>
@@ -390,7 +391,57 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
   </div>
 
   <!-- ===== TRADES ===== -->
-  <div class="view" id="v-trades">
+  <div class="view" id="v-bnc"><div class="vhead">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <h2 style="font-size:18px">🪙 Binance — IA ML Crypto (démo)</h2>
+    <div id="bnStatus" class="mono" style="font-size:12px;color:var(--txt3)"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <div class="setcard">
+      <h3>🤖 Modèle IA (Machine Learning)</h3>
+      <div id="bnMl" class="mono" style="font-size:12px;line-height:2;color:var(--txt2)"></div>
+      <button class="btn sm" onclick="bnTrain()" id="bnTrainBtn">🧠 Entraîner l'IA</button>
+      <div style="margin-top:12px"><label>Seuil de confiance : <b id="bnThrV"></b></label>
+      <input type="range" min="55" max="85" value="62" id="bnThr" style="width:100%" oninput="S.bnc.conf=this.value/100;document.getElementById('bnThrV').textContent=this.value+'%';save()"></div>
+    </div>
+    <div class="setcard">
+      <h3>📈 Scalpeur IA</h3>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <div class="switch" id="bnScalpSw" onclick="bnToggleScalp()"></div>
+        <span style="font-size:12px;color:var(--txt3)">Achat/vente automatique (papier) quand la confiance dépasse le seuil</span>
+      </div>
+      <div class="frow" style="grid-template-columns:1fr 1fr;align-items:end">
+        <div><label>USDT par trade</label><input type="number" id="bnPerTrade" value="20" onchange="S.bnc.perTrade=+this.value;save()"></div>
+        <div><label>Solde démo (USDT)</label><input type="number" id="bnUsdt" value="1000" onchange="S.bnc.usdt=+this.value;save()"></div>
+      </div>
+      <div id="bnScalpStats" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:8px"></div>
+    </div>
+    <div class="setcard">
+      <h3>🪙 Accumulateur BTC</h3>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <div class="switch" id="bnAccSw" onclick="bnToggleAcc()"></div>
+        <span style="font-size:12px;color:var(--txt3)">Achats récurrents + renfort à la baisse (DCA intelligent)</span>
+      </div>
+      <div class="frow" style="grid-template-columns:1fr 1fr 1fr;align-items:end">
+        <div><label>Montant (USDT)</label><input type="number" id="bnAccBuy" value="25" onchange="S.bnc.acc.perBuy=+this.value;save()"></div>
+        <div><label>Toutes les (h)</label><input type="number" id="bnAccFreq" value="6" onchange="S.bnc.acc.freqH=+this.value;save()"></div>
+        <div><label>Renfort si baisse (%)</label><input type="number" id="bnAccDip" value="2.5" onchange="S.bnc.acc.dipPct=+this.value;save()"></div>
+      </div>
+      <div id="bnAccStats" class="mono" style="font-size:12px;line-height:2;color:var(--teal);margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="setcard" style="margin-top:14px">
+    <h3>📡 Scanner IA en direct</h3>
+    <div id="bnScan" style="font-size:12px;color:var(--txt3)">Scanner inactif — entraînez l'IA puis activez le scalpeur, ou ouvrez cette page.</div>
+  </div>
+  <div class="setcard" style="margin-top:14px">
+    <h3>📋 Scalps &amp; achats d'accumulation</h3>
+    <div style="overflow-x:auto"><table class="tab"><thead><tr><th>Heure</th><th>Type</th><th>Paire</th><th>Sens</th><th>Montant</th><th>Entrée</th><th>Sortie</th><th>P&L</th></tr></thead>
+    <tbody id="bnLog"></tbody></table></div>
+  </div>
+</div></div>
+
+<div class="view" id="v-trades">
     <div class="vhead"><h2>Trades</h2><span class="sub" id="trSub">0 ouverts · 0 clôturés</span></div>
     <div class="statgrid" style="grid-template-columns:repeat(4,1fr)">
       <div class="stat"><div class="k">P&L réalisé</div><div class="v" id="trReal">—</div></div>
@@ -576,6 +627,7 @@ function defaultState(){
     signals:[], open:[], closed:[], eqCurve:[{t:Date.now(),v:10000}],
     meta:{token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},
     deriv:{token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},
+    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]}},
   };
 }
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
@@ -1628,10 +1680,189 @@ function dvRender(){
   }
 }
 
+/* ---------- BINANCE : IA ML CRYPTO ---------- */
+const BN_HOSTS=['https://api.binance.com','https://api-gcp.binance.com','https://api1.binance.com','https://api2.binance.com','https://api3.binance.com'];
+async function bnFetch(path){
+  const hosts=S.bnc.host?[S.bnc.host,...BN_HOSTS.filter(h=>h!==S.bnc.host)]:BN_HOSTS;
+  for(const h of hosts){
+    try{
+      const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),8000);
+      const r=await fetch(h+path,{signal:ctl.signal}); clearTimeout(t);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const j=await r.json();
+      S.bnc.host=h; return j;
+    }catch(e){}
+  }
+  throw new Error('Binance injoignable');
+}
+async function bnKlines(sym,limit){ return await bnFetch('/api/v3/klines?symbol='+sym+'&interval=1m&limit='+limit); }
+function bnFeat(c,v,i){
+  const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+  const sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)*(x-m))))};
+  const rc=n=>i>=n?c[i]/c[i-n]-1:0;
+  let g=0,l=0; for(let k=i-13;k<=i;k++){const d=c[k]-c[k-1]; d>0?g+=d:l-=d;} const rsi=g+l===0?50:100-100/(1+(g/Math.max(l,1e-9)));
+  const e=(n)=>{const a=c.slice(Math.max(0,i-n+1),i+1);const k=2/(n+1);let e=a[0];for(const x of a.slice(1))e=x*k+e*(1-k);return e;};
+  const vf=(v.slice(Math.max(0,i-19),i+1)); const vstd=sd(vf)||1e-9;
+  return [ rc(1), rc(3), rc(15), rsi, (e(9)/e(21)-1), (v[i]-mean(vf))/vstd ];
+}
+async function bnTrain(){
+  const btn=document.getElementById('bnTrainBtn'); if(btn)btn.textContent='⏳ Entraînement…';
+  try{
+    const syms=['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT']; const X=[],Y=[];
+    for(const s of syms){
+      const k=await bnKlines(s,1000);
+      const c=k.map(x=>+x[4]), v=k.map(x=>+x[6]);
+      for(let i=30;i<c.length-5;i++){
+        X.push(bnFeat(c,v,i)); Y.push(c[i+5]/c[i]-1>0.0015?1:0);
+      }
+    }
+    const n=X.length, dim=X[0].length;
+    const mu=Array(dim).fill(0), sg=Array(dim).fill(0);
+    for(let d=0;d<dim;d++)for(let r=0;r<n;r++)mu[d]+=X[r][d]/n;
+    for(let d=0;d<dim;d++){let s=0;for(let r=0;r<n;r++)s+=(X[r][d]-mu[d])**2;sg[d]=Math.sqrt(s/n)||1;}
+    const Z=X.map(r=>r.map((x,d)=>(x-mu[d])/sg[d]));
+    const cut=Math.floor(n*0.8), Ztr=Z.slice(0,cut), Ytr=Y.slice(0,cut), Zv=Z.slice(cut), Yv=Y.slice(cut);
+    let w=Array(dim).fill(0), b=0; const lr=0.3;
+    for(let ep=0;ep<250;ep++){
+      const gw=Array(dim).fill(0); let gb=0;
+      for(let r=0;r<Ztr.length;r++){
+        let z=b; for(let d=0;d<dim;d++)z+=w[d]*Ztr[r][d];
+        const p=1/(1+Math.exp(-z)), e=p-Ytr[r];
+        for(let d=0;d<dim;d++)gw[d]+=e*Ztr[r][d]; gb+=e;
+      }
+      for(let d=0;d<dim;d++)w[d]-=lr*(gw[d]/Ztr.length+0.001*w[d]);
+      b-=lr*gb/Ztr.length;
+    }
+    const acc=m=>{let ok=0;for(let r=0;r<m.Z.length;r++){let z=m.b;for(let d=0;d<dim;d++)z+=m.w[d]*m.Z[r][d];const p=1/(1+Math.exp(-z));if((p>=0.5?1:0)===m.Y[r])ok++;}return ok/m.Z.length;};
+    const aTr=acc({Z:Ztr,Y:Ytr,w,b}), aVa=acc({Z:Zv,Y:Yv,w,b});
+    S.bnc.ml={w,b,mu,sg,samples:n,acc:Math.round(aVa*100),accTr:Math.round(aTr*100),trainedAt:Date.now(),up:Y.filter(y=>y===1).length};
+    save();
+    toast('IA entraînée ✔ '+n+' échantillons — précision validation '+Math.round(aVa*100)+'%','🧠');
+  }catch(e){ toast('Entraînement impossible : '+e.message+' — Binance est-il accessible depuis ce réseau ?','⚠️'); }
+  if(btn)btn.textContent='🧠 Entraîner l\'IA';
+  bnRender();
+}
+function bnPredict(f){
+  const m=S.bnc.ml; if(!m)return null;
+  const z=m.b+f.reduce((a,x,d)=>a+m.w[d]*((x-m.mu[d])/m.sg[d]),0);
+  return 1/(1+Math.exp(-z));
+}
+let bnBusy=false;
+async function bnLoop(){
+  const B=S.bnc;
+  const active=document.getElementById('v-bnc').classList.contains('on')||B.scalpOn||B.acc.enabled;
+  if(!active||bnBusy)return;
+  bnBusy=true;
+  try{
+    const scans=[];
+    for(const s of B.pairs){
+      const k=await bnKlines(s,300);
+      const c=k.map(x=>+x[4]), v=k.map(x=>+x[6]);
+      const px=c[c.length-1];
+      const conf=B.ml?bnPredict(bnFeat(c,v,c.length-1)):null;
+      scans.push({t:Date.now(),sym:s,px,conf});
+    }
+    B.scans=scans; B.status='Binance OK ✔ ('+(B.host||'').replace('https://','')+')';
+    bnManageScalp(scans); bnAccTick(scans);
+    save();
+  }catch(e){ B.status='❌ Binance injoignable depuis ce réseau ('+e.message+')'; }
+  bnBusy=false;
+  bnRender();
+}
+function bnToggleScalp(){
+  if(!S.bnc.ml){toast('Entraînez d\u2019abord l\u2019IA (bouton 🧠)','🧠');return;}
+  S.bnc.scalpOn=!S.bnc.scalpOn;
+  toast(S.bnc.scalpOn?'Scalpeur IA actif (papier) — seuil '+Math.round(S.bnc.conf*100)+'%':'Scalpeur suspendu','📈');
+  save();bnRender();
+}
+function bnToggleAcc(){
+  S.bnc.acc.enabled=!S.bnc.acc.enabled;
+  if(S.bnc.acc.enabled&&!S.bnc.acc.lastBuyT)S.bnc.acc.lastBuyT=Date.now();
+  toast(S.bnc.acc.enabled?'Accumulateur BTC actif — '+S.bnc.acc.perBuy+' USDT toutes les '+S.bnc.acc.freqH+'h + renfort baisse '+S.bnc.acc.dipPct+'%':'Accumulateur suspendu','🪙');
+  save();bnRender();
+}
+function bnClose(pos,px){
+  const B=S.bnc, fee=0.001;
+  const out=px, pnl=pos.qty*(out-pos.entry)*(1-fee);
+  B.usdt+=pos.qty*out*(1-fee);
+  B.open=B.open.filter(p=>p!==pos);
+  B.trades.unshift({t:Date.now(),kind:'SCALP',sym:pos.sym,side:pos.side,amt:pos.stake,entry:pos.entry,exit:out,pnl});
+  if(B.trades.length>60)B.trades.length=60;
+  return pnl;
+}
+function bnManageScalp(scans){
+  const B=S.bnc;
+  if(!scans.length)return;
+  // clôtures SL/TP
+  for(const pos of [...B.open]){
+    const sc=scans.find(s=>s.sym===pos.sym);
+    if(!sc)continue;
+    if(sc.px<=pos.sl){const p=bnClose(pos,pos.sl);toast('Scalp '+pos.sym+' clôturé SL : '+p.toFixed(2)+' USDT','⚠️');}
+    else if(sc.px>=pos.tp){const p=bnClose(pos,pos.tp);toast('Scalp '+pos.sym+' clôturé TP : +'+p.toFixed(2)+' USDT','✅');}
+  }
+  if(!B.scalpOn)return;
+  // ouvertures au-dessus du seuil
+  for(const sc of scans){
+    if(sc.conf==null||sc.conf<B.conf)continue;
+    if(B.open.find(p=>p.sym===sc.sym))continue;
+    if(B.open.length>=3)break;
+    if(B.usdt<B.perTrade)break;
+    const stake=Math.min(B.perTrade,B.usdt), fee=0.001;
+    const qty=stake*(1-fee)/sc.px;
+    B.usdt-=stake;
+    B.open.push({t:Date.now(),sym:sc.sym,side:'BUY',stake,qty,entry:sc.px,sl:sc.px*0.9965,tp:sc.px*1.005,conf:sc.conf});
+    B.trades.unshift({t:Date.now(),kind:'SCALP-O',sym:sc.sym,side:'BUY',amt:stake,entry:sc.px,exit:null,pnl:null,conf:Math.round(sc.conf*100)});
+    toast('📈 Scalp '+sc.sym+' — confiance '+Math.round(sc.conf*100)+'% ≥ seuil','📈');
+  }
+}
+function bnAccTick(scans){
+  const A=S.bnc.acc, B=S.bnc;
+  if(!A.enabled)return;
+  const btc=scans.find(s=>s.sym==='BTCUSDT'); if(!btc)return;
+  const px=btc.px;
+  if(!A.refPrice)A.refPrice=px;
+  const now=Date.now();
+  const dueFreq=(now-A.lastBuyT)>=A.freqH*3600e3;
+  const dip=px<=A.refPrice*(1-A.dipPct/100);
+  if(!(dueFreq||dip))return;
+  if(B.usdt<A.perBuy){A.enabled=false;toast('Accumulateur stoppé : solde démo insuffisant','⚠️');return;}
+  const fee=0.001;
+  B.usdt-=A.perBuy;
+  A.btc+=A.perBuy*(1-fee)/px;
+  A.invested+=A.perBuy;
+  A.refPrice=px; A.lastBuyT=now;
+  A.buys.unshift({t:now,px,amt:A.perBuy}); if(A.buys.length>40)A.buys.length=40;
+  B.trades.unshift({t:now,kind:'ACC-BTC',sym:'BTCUSDT',side:'BUY',amt:A.perBuy,entry:px,exit:null,pnl:null});
+  toast('🪙 Accumulation : '+A.perBuy+' USDT de BTC achetés à '+px.toLocaleString()+' $'+(dip?' (renfort baisse)':''),'🪙');
+}
+function bnRender(){
+  const B=S.bnc;
+  if(!document.getElementById('bnStatus'))return;
+  document.getElementById('bnStatus').innerHTML='<span class="'+(B.status.startsWith('Binance OK')?'up':'dn')+'">'+B.status+'</span> · Solde démo : <b>'+fmt(B.usdt,2)+' USDT</b>';
+  const thr=document.getElementById('bnThr');
+  if(thr&&document.activeElement!==thr){thr.value=Math.round(B.conf*100);document.getElementById('bnThrV').textContent=Math.round(B.conf*100)+'%';}
+  const mlEl=document.getElementById('bnMl');
+  mlEl.innerHTML=B.ml?('✔ IA entraînée — '+B.ml.samples+' échantillons · précision '+B.ml.acc+'% (train '+B.ml.accTr+'%) · '+hhmm(B.ml.trainedAt)):'IA non entraînée — appuyez sur 🧠 Entraîner (télécharge ~4000 bougies 1 min de Binance et apprend)';
+  document.getElementById('bnScalpSw').classList.toggle('on',!!B.scalpOn);
+  document.getElementById('bnAccSw').classList.toggle('on',!!B.acc.enabled);
+  ['bnPerTrade','bnUsdt'].forEach((id,ix)=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=ix?B.usdt:B.perTrade;});
+  const o=B.open.reduce((a,p)=>a+p.qty*( (B.scans.find(s=>s.sym===p.sym)||{px:p.entry}).px -p.entry),0);
+  const closed=B.trades.filter(t=>t.kind==='SCALP'&&t.pnl!=null);
+  const pl=closed.reduce((a,t)=>a+t.pnl,0);
+  document.getElementById('bnScalpStats').innerHTML='Positions ouvertes : <b>'+B.open.length+'</b> · P&L réalisé : <b class="'+(pl>=0?'up':'dn')+'">'+pl.toFixed(2)+' USDT</b> · P&L flottant : <b class="'+(o>=0?'up':'dn')+'">'+o.toFixed(2)+'</b> · Scalps gagnants : <b>'+closed.filter(t=>t.pnl>0).length+'/'+closed.length+'</b>';
+  const A=B.acc, btcP=(B.scans.find(s=>s.sym==='BTCUSDT')||{px:0}).px;
+  const val=A.btc*btcP, pct=A.invested?((val/A.invested-1)*100).toFixed(1):'0.0';
+  document.getElementById('bnAccStats').innerHTML='BTC accumulé : <b>'+A.btc.toFixed(6)+' ₿</b> · Investi : <b>'+A.invested.toFixed(2)+' USDT</b> · Prix moyen : <b>'+((A.invested/Math.max(A.btc,1e-9))||0).toFixed(0)+' $</b><br/>Valeur actuelle : <b>'+val.toFixed(2)+' USDT</b> (<b class="'+(pct>=0?'up':'dn')+'">'+pct+'%</b>) · Prochain achat dans ~'+Math.max(0,Math.ceil((A.freqH*3600e3-(Date.now()-A.lastBuyT))/3600e3))+'h · Achats : '+A.buys.length;
+  const sc=document.getElementById('bnScan');
+  sc.innerHTML=B.scans.length?('<table class="tab"><thead><tr><th>Paire</th><th>Prix</th><th>Confiance IA</th><th>Signal</th></tr></thead><tbody>'+
+    B.scans.map(s=>{const c=s.conf==null?'—':Math.round(s.conf*100)+'%';const sig=s.conf==null?'—':(s.conf>=B.conf?'<span class="up">ACHAT</span>':(s.conf<=1-B.conf?'<span class="dn">VENTE</span>':'neutre'));
+      return '<tr><td><b>'+s.sym+'</b></td><td>'+fmt(s.px,s.px>100?2:5)+'</td><td>'+c+'</td><td>'+sig+'</td></tr>';}).join('')+'</tbody></table>'):'Scanner inactif — entraînez l\u2019IA puis restez sur cette page.';
+  document.getElementById('bnLog').innerHTML=B.trades.slice(0,40).map(t=>'<tr><td>'+hhmm(t.t)+'</td><td>'+(t.kind==='ACC-BTC'?'🪙 ACC':'📈 SCALP')+'</td><td>'+t.sym+'</td><td class="'+(t.side==='BUY'?'up':'dn')+'">'+t.side+'</td><td>'+fmt(t.amt,2)+'</td><td>'+fmt(t.entry,t.entry>100?2:5)+'</td><td>'+(t.exit!=null?fmt(t.exit,t.exit>100?2:5):'—')+'</td><td class="'+((t.pnl||0)>=0?'up':'dn')+'">'+(t.pnl!=null?t.pnl.toFixed(2):'ouverte')+'</td></tr>').join('')||'<tr><td colspan="8" style="padding:12px;color:var(--txt3)">Aucun trade pour l\u2019instant.</td></tr>';
+}
 /* ---------- RENDER GLOBAL ---------- */
 function render(){
   if(!S)return;
-  renderDash();renderChannels();renderStrats();renderTrades();renderSettings();maRender();dvRender();
+  renderDash();renderChannels();renderStrats();renderTrades();renderSettings();maRender();dvRender();bnRender();
 }
 
 /* ---------- COPIEUR ON/OFF ---------- */
@@ -1674,12 +1905,14 @@ function boot(){
   S.meta=Object.assign({token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},S.meta||{});
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
+  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]}},S.bnc||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
   S.meta.positions=[]; S.meta.realOrders=S.meta.realOrders||[];
   if(!S.closed.length&&!S.signals.length) seedDemo();
   // préchauffer les prix
   for(let i=0;i<60;i++)tickPrices();
+  setInterval(bnLoop,15000);
   render(); tickClock();
   // boucle moteur — tick 2s
   let last=Date.now();
