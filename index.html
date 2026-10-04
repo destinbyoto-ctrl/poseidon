@@ -321,7 +321,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
     <button data-v="trades" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
     <button data-v="bnc" onclick="goView('bnc')"><span class="ic">🪙</span>Binance</button>
     <button data-v="settings" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--ln)">Poseidon <b style="color:var(--teal)">v3.0</b> — Binance IA</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--ln)">Poseidon <b style="color:var(--teal)">v3.1</b> — Binance IA</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvellement : jamais 🔱</div>
   </div>
@@ -432,6 +432,20 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
         <div><label>Renfort si baisse (%)</label><input type="number" id="bnAccDip" value="2.5" onchange="S.bnc.acc.dipPct=+this.value;save()"></div>
       </div>
       <div id="bnAccStats" class="mono" style="font-size:12px;line-height:2;color:var(--teal);margin-top:8px"></div>
+    </div>
+  <div class="setcard">
+      <h3>🔑 Compte Binance réel</h3>
+      <div style="font-size:12px;color:var(--txt3);line-height:1.6;margin-bottom:10px">Créez la clé sur binance.com → Profil → API Management : activez « Enable Spot &amp; Margin Trading », laissez les retraits désactivés, et ne mettez aucune restriction IP. Testez d'abord en démo quelques jours.</div>
+      <div class="frow" style="grid-template-columns:1fr 1fr">
+        <div><label>Clé API</label><input type="text" id="bnApiKey" placeholder="Clé API (64 caractères)" autocomplete="off"></div>
+        <div><label>Secret API</label><input type="password" id="bnApiSecret" placeholder="Secret API" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn sm" onclick="bnRealTest()" id="bnRealBtn">🔴 Tester &amp; activer le réel</button>
+        <button class="btn sm ghost" onclick="bnRealOff()">🟢 Revenir en démo</button>
+        <button class="btn sm ghost" onclick="bnDiag()">🩺 Test connexion</button>
+      </div>
+      <div id="bnRealStatus" class="mono" style="font-size:12px;line-height:2;color:var(--txt2);margin-top:8px"></div>
     </div>
   </div>
   <div class="setcard" style="margin-top:14px">
@@ -631,7 +645,7 @@ function defaultState(){
     signals:[], open:[], closed:[], eqCurve:[{t:Date.now(),v:10000}],
     meta:{token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},
     deriv:{token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},
-    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]}},
+    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''}},
   };
 }
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
@@ -1699,7 +1713,84 @@ async function bnFetch(path){
   }
   throw new Error('Binance injoignable');
 }
-async function bnKlines(sym,limit){ return await bnFetch('/api/v3/klines?symbol='+sym+'&interval=1m&limit='+limit); }
+async function bnKlines(sym,limit){
+  const hosts=S.bnc.host?[S.bnc.host,...BN_HOSTS.filter(h=>h!==S.bnc.host)]:BN_HOSTS;
+  for(const h of hosts){
+    try{
+      const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),8000);
+      const r=await fetch(h+'/api/v3/klines?symbol='+sym+'&interval=1m&limit='+limit,{signal:ctl.signal}); clearTimeout(t);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const j=await r.json();
+      S.bnc.host=h; S.bnc.alt=false; return j;
+    }catch(e){}
+  }
+  S.bnc.alt=true;
+  const r=await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol='+sym+'&interval=1&limit='+Math.min(limit,1000));
+  const j=await r.json();
+  if(j.retCode!==0) throw new Error(j.retMsg||'Bybit indisponible');
+  return j.result.list.slice().reverse().map(x=>[+x[0],x[1],x[2],x[3],x[4],x[4],x[5]]);
+}
+async function bnSigned(path,params,method){
+  const B=S.bnc.real;
+  params=params||{}; params.timestamp=Date.now(); params.recvWindow=8000;
+  const qs=new URLSearchParams(params).toString();
+  const enc=new TextEncoder();
+  const key=await crypto.subtle.importKey('raw',enc.encode(B.apiSecret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  const sig=await crypto.subtle.sign('HMAC',key,enc.encode(qs));
+  const hex=[...new Uint8Array(sig)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  const host=S.bnc.host||BN_HOSTS[0];
+  const full=qs+'&signature='+hex;
+  const post=method&&method!=='GET';
+  const url=post?host+path:host+path+'?'+full;
+  const r=await fetch(url,{method:method||'GET',headers:{'X-MBX-APIKEY':B.apiKey,'Content-Type':'application/x-www-form-urlencoded'},body:post?full:undefined});
+  return await r.json();
+}
+async function bnRealTest(){
+  const B=S.bnc.real;
+  B.apiKey=(document.getElementById('bnApiKey').value||'').trim();
+  B.apiSecret=(document.getElementById('bnApiSecret').value||'').trim();
+  if(!B.apiKey||!B.apiSecret){toast('Collez votre clé API et votre secret Binance','🔑');return;}
+  B.status='Test des clés en cours…';bnRender();
+  try{
+    const acc=await bnSigned('/api/v3/account',{});
+    if(acc.code!==undefined&&(acc.code<0))throw new Error(acc.msg||('erreur '+acc.code));
+    if(!acc.canTrade)throw new Error('Trading désactivé sur ces clés — cochez « Enable Spot & Margin Trading »');
+    const usdt=(acc.balances||[]).find(b=>b.asset==='USDT');
+    B.account={canTrade:true,usdt:usdt?+usdt.free:0,updated:Date.now()};
+    B.on=true; B.status='';
+    toast('Mode RÉEL activé ✔ Solde : '+B.account.usdt.toFixed(2)+' USDT','🔴');
+  }catch(e){ B.on=false; B.status='✖ '+e.message; toast('Clés refusées : '+e.message,'⚠️'); }
+  save();bnRender();
+}
+function bnRealOff(){S.bnc.real.on=false;save();bnRender();toast('Retour au mode démo — les ordres sont simulés','🟢');}
+async function bnRealBuy(sym,quoteQty){
+  const r=await bnSigned('/api/v3/order',{symbol:sym,side:'BUY',type:'MARKET',quoteOrderQty:quoteQty},'POST');
+  if(r.code)throw new Error(r.msg||('erreur '+r.code));
+  return {qty:+r.executedQty,cost:+r.cummulativeQuoteQty};
+}
+async function bnRealSell(sym,qty){
+  const r=await bnSigned('/api/v3/order',{symbol:sym,side:'SELL',type:'MARKET',quantity:qty},'POST');
+  if(r.code)throw new Error(r.msg||('erreur '+r.code));
+  return {qty:+r.executedQty,cost:+r.cummulativeQuoteQty};
+}
+async function bnDiag(){
+  const d={lines:[],done:false};
+  S.bnc.diag=d;bnRender();
+  for(const h of BN_HOSTS){
+    try{
+      const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),7000);
+      const r=await fetch(h+'/api/v3/ping',{signal:ctl.signal}); clearTimeout(t);
+      d.lines.push((r.ok?'✔ ':'HTTP '+r.status+' ')+h.replace('https://',''));
+    }catch(e){ d.lines.push('✖ '+h.replace('https://','')+' — '+(e.message==='The operation was aborted.'?'timeout':'bloqué')); }
+    bnRender();
+  }
+  try{
+    const r=await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=1&limit=2');
+    const j=await r.json();
+    d.lines.push((j.retCode===0?'✔ ':'✖ ')+'api.bybit.com (secours données)');
+  }catch(e){ d.lines.push('✖ api.bybit.com (secours données) — bloqué'); }
+  d.done=true;save();bnRender();
+}
 function bnFeat(c,v,i){
   const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
   const sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)*(x-m))))};
@@ -1766,10 +1857,10 @@ async function bnLoop(){
       const conf=B.ml?bnPredict(bnFeat(c,v,c.length-1)):null;
       scans.push({t:Date.now(),sym:s,px,conf});
     }
-    B.scans=scans; B.status='Binance OK ✔ ('+(B.host||'').replace('https://','')+')';
-    bnManageScalp(scans); bnAccTick(scans);
+    B.scans=scans; B.status=(B.alt?'Données OK via Bybit (Binance bloqué ici)':'Binance OK ✔ ('+(B.host||'').replace('https://','')+')');
+    await bnManageScalp(scans); await bnAccTick(scans);
     save();
-  }catch(e){ B.status='❌ Binance injoignable depuis ce réseau ('+e.message+')'; }
+  }catch(e){ B.status='❌ Binance et Bybit injoignables depuis ce réseau ('+e.message+')'; }
   bnBusy=false;
   bnRender();
 }
@@ -1794,15 +1885,28 @@ function bnClose(pos,px){
   if(B.trades.length>60)B.trades.length=60;
   return pnl;
 }
-function bnManageScalp(scans){
+async function bnManageScalp(scans){
   const B=S.bnc;
   if(!scans.length)return;
   // clôtures SL/TP
   for(const pos of [...B.open]){
     const sc=scans.find(s=>s.sym===pos.sym);
     if(!sc)continue;
-    if(sc.px<=pos.sl){const p=bnClose(pos,pos.sl);toast('Scalp '+pos.sym+' clôturé SL : '+p.toFixed(2)+' USDT','⚠️');}
-    else if(sc.px>=pos.tp){const p=bnClose(pos,pos.tp);toast('Scalp '+pos.sym+' clôturé TP : +'+p.toFixed(2)+' USDT','✅');}
+    if(sc.px>pos.sl&&sc.px<pos.tp)continue;
+    if(pos.real){
+      try{
+        const o=await bnRealSell(pos.sym,pos.qty);
+        const out=o.qty>0?o.cost/o.qty:pos.entry;
+        B.open=B.open.filter(p=>p!==pos);
+        const pnl=(out-pos.entry)*pos.qty;
+        B.trades.unshift({t:Date.now(),kind:'SCALP',sym:pos.sym,side:'SELL',amt:0,entry:pos.entry,exit:out,pnl,real:true});
+        if(B.real.account){try{const a=await bnSigned('/api/v3/account',{});if(a.balances){const u=a.balances.find(b=>b.asset==='USDT');if(u)B.real.account.usdt=+u.free;}}catch(e){}}
+        toast('Scalp RÉEL '+pos.sym+' clôturé : '+(sc.px>=pos.tp?'+':'')+pnl.toFixed(2)+' USDT',sc.px>=pos.tp?'✅':'⚠️');
+      }catch(e){ toast('Vente réelle refusée : '+e.message,'⚠️'); }
+    }else{
+      const p=bnClose(pos,sc.px<=pos.sl?pos.sl:pos.tp);
+      toast('Scalp '+pos.sym+' clôturé '+(sc.px<=pos.sl?'SL : '+p.toFixed(2)+' USDT':'TP : +'+p.toFixed(2)+' USDT'),sc.px<=pos.sl?'⚠️':'✅');
+    }
   }
   if(!B.scalpOn)return;
   // ouvertures au-dessus du seuil
@@ -1810,16 +1914,27 @@ function bnManageScalp(scans){
     if(sc.conf==null||sc.conf<B.conf)continue;
     if(B.open.find(p=>p.sym===sc.sym))continue;
     if(B.open.length>=3)break;
-    if(B.usdt<B.perTrade)break;
-    const stake=Math.min(B.perTrade,B.usdt), fee=0.001;
-    const qty=stake*(1-fee)/sc.px;
-    B.usdt-=stake;
-    B.open.push({t:Date.now(),sym:sc.sym,side:'BUY',stake,qty,entry:sc.px,sl:sc.px*0.9965,tp:sc.px*1.005,conf:sc.conf});
-    B.trades.unshift({t:Date.now(),kind:'SCALP-O',sym:sc.sym,side:'BUY',amt:stake,entry:sc.px,exit:null,pnl:null,conf:Math.round(sc.conf*100)});
-    toast('📈 Scalp '+sc.sym+' — confiance '+Math.round(sc.conf*100)+'% ≥ seuil','📈');
+    if(B.real.on){
+      try{
+        const ord=await bnRealBuy(sc.sym,B.perTrade);
+        if(ord.qty<=0)throw new Error('quantité exécutée nulle');
+        const entry=ord.cost/ord.qty;
+        B.open.push({t:Date.now(),sym:sc.sym,side:'BUY',stake:B.perTrade,qty:ord.qty,entry,real:true,sl:entry*0.9965,tp:entry*1.005,conf:sc.conf});
+        B.trades.unshift({t:Date.now(),kind:'SCALP-O',sym:sc.sym,side:'BUY',amt:B.perTrade,entry,exit:null,pnl:null,conf:Math.round(sc.conf*100),real:true});
+        toast('🔴 Scalp RÉEL '+sc.sym+' — confiance '+Math.round(sc.conf*100)+'%','📈');
+      }catch(e){ toast('Achat réel refusé : '+e.message,'⚠️'); }
+    }else{
+      if(B.usdt<B.perTrade)break;
+      const stake=Math.min(B.perTrade,B.usdt), fee=0.001;
+      const qty=stake*(1-fee)/sc.px;
+      B.usdt-=stake;
+      B.open.push({t:Date.now(),sym:sc.sym,side:'BUY',stake,qty,entry:sc.px,sl:sc.px*0.9965,tp:sc.px*1.005,conf:sc.conf});
+      B.trades.unshift({t:Date.now(),kind:'SCALP-O',sym:sc.sym,side:'BUY',amt:stake,entry:sc.px,exit:null,pnl:null,conf:Math.round(sc.conf*100)});
+      toast('📈 Scalp '+sc.sym+' — confiance '+Math.round(sc.conf*100)+'% ≥ seuil','📈');
+    }
   }
 }
-function bnAccTick(scans){
+async function bnAccTick(scans){
   const A=S.bnc.acc, B=S.bnc;
   if(!A.enabled)return;
   const btc=scans.find(s=>s.sym==='BTCUSDT'); if(!btc)return;
@@ -1829,6 +1944,18 @@ function bnAccTick(scans){
   const dueFreq=(now-A.lastBuyT)>=A.freqH*3600e3;
   const dip=px<=A.refPrice*(1-A.dipPct/100);
   if(!(dueFreq||dip))return;
+  if(B.real.on){
+    try{
+      const ord=await bnRealBuy('BTCUSDT',A.perBuy);
+      const bpx=ord.qty>0?ord.cost/ord.qty:px;
+      A.btc+=ord.qty; A.invested+=ord.cost;
+      A.refPrice=bpx; A.lastBuyT=now;
+      A.buys.unshift({t:now,px:bpx,amt:ord.cost}); if(A.buys.length>40)A.buys.length=40;
+      B.trades.unshift({t:now,kind:'ACC-BTC',sym:'BTCUSDT',side:'BUY',amt:ord.cost,entry:bpx,exit:null,pnl:null,real:true});
+      toast('🪙 Accumulation RÉELLE : '+ord.cost.toFixed(2)+' USDT de BTC à '+bpx.toLocaleString()+' $'+(dip?' (renfort baisse)':''),'🪙');
+    }catch(e){ toast('Achat réel refusé : '+e.message,'⚠️'); }
+    return;
+  }
   if(B.usdt<A.perBuy){A.enabled=false;toast('Accumulateur stoppé : solde démo insuffisant','⚠️');return;}
   const fee=0.001;
   B.usdt-=A.perBuy;
@@ -1861,6 +1988,15 @@ function bnRender(){
   sc.innerHTML=B.scans.length?('<table class="tab"><thead><tr><th>Paire</th><th>Prix</th><th>Confiance IA</th><th>Signal</th></tr></thead><tbody>'+
     B.scans.map(s=>{const c=s.conf==null?'—':Math.round(s.conf*100)+'%';const sig=s.conf==null?'—':(s.conf>=B.conf?'<span class="up">ACHAT</span>':(s.conf<=1-B.conf?'<span class="dn">VENTE</span>':'neutre'));
       return '<tr><td><b>'+s.sym+'</b></td><td>'+fmt(s.px,s.px>100?2:5)+'</td><td>'+c+'</td><td>'+sig+'</td></tr>';}).join('')+'</tbody></table>'):'Scanner inactif — entraînez l\u2019IA puis restez sur cette page.';
+  const R=B.real;
+  ['bnApiKey','bnApiSecret'].forEach(id=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=id==='bnApiKey'?R.apiKey:R.apiSecret;});
+  const rs=document.getElementById('bnRealStatus');
+  if(rs){
+    let h=(R.on?'<b style="color:var(--dn)">🔴 MODE RÉEL ACTIF</b> — solde : <b>'+(R.account?R.account.usdt.toFixed(2):'?')+' USDT</b><br/>':'')+(R.status||'Mode démo — les ordres sont simulés.');
+    if(B.alt)h+='<br/>⚠️ Données via Bybit : l’API Binance est bloquée depuis ce réseau. Le scalping réel exige que Binance soit accessible.';
+    if(B.diag){h+='<div style="margin-top:6px">'+B.diag.lines.map(l=>'<div>'+l+'</div>').join('')+(B.diag.done?'':'<div>⏳ test en cours…</div>')+'</div>';}
+    rs.innerHTML=h;
+  }
   document.getElementById('bnLog').innerHTML=B.trades.slice(0,40).map(t=>'<tr><td>'+hhmm(t.t)+'</td><td>'+(t.kind==='ACC-BTC'?'🪙 ACC':'📈 SCALP')+'</td><td>'+t.sym+'</td><td class="'+(t.side==='BUY'?'up':'dn')+'">'+t.side+'</td><td>'+fmt(t.amt,2)+'</td><td>'+fmt(t.entry,t.entry>100?2:5)+'</td><td>'+(t.exit!=null?fmt(t.exit,t.exit>100?2:5):'—')+'</td><td class="'+((t.pnl||0)>=0?'up':'dn')+'">'+(t.pnl!=null?t.pnl.toFixed(2):'ouverte')+'</td></tr>').join('')||'<tr><td colspan="8" style="padding:12px;color:var(--txt3)">Aucun trade pour l\u2019instant.</td></tr>';
 }
 /* ---------- RENDER GLOBAL ---------- */
@@ -1909,7 +2045,8 @@ function boot(){
   S.meta=Object.assign({token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},S.meta||{});
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
-  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]}},S.bnc||{});
+  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''}},S.bnc||{});
+  S.bnc.real=Object.assign({apiKey:'',apiSecret:'',on:false,account:null,status:''},S.bnc.real||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
   S.meta.positions=[]; S.meta.realOrders=S.meta.realOrders||[];
