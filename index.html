@@ -458,7 +458,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
     <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
     <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🤖</span>Outils IA Binance</button>
     <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.6</b> — Multi-broker</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.7</b> — Multi-broker</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvelement : jamais 🔱</div>
   </div>
@@ -2471,9 +2471,9 @@ function momScore(c,v,i){
   for(let k=i-m+1;k<=i;k++)tr+=Math.abs(c[k]-c[k-1]);
   const atr=tr/m||1e-9;
   const roc=c[i]/c[i-10]-1;
-  let mom=0.35*Math.max(-1,Math.min(1,(rsi-50)/25))
-        +0.35*Math.max(-1,Math.min(1,hist/(atr*0.4)))
-        +0.30*Math.max(-1,Math.min(1,roc*100/0.35));
+  let mom=0.35*Math.max(-1,Math.min(1,(rsi-50)/15))
+        +0.35*Math.max(-1,Math.min(1,hist/(atr*0.25)))
+        +0.30*Math.max(-1,Math.min(1,roc*100/0.15));
   const B=S.bnc;
   const ml=B.ml?bnPredict(bnFeat(c,v,i)):0.5;
   mom=0.75*mom+0.25*(ml-0.5)*2;
@@ -2500,7 +2500,9 @@ async function momScan(manual){
     }
     if(best){
       const now=Date.now();
-      M.signals.unshift({t:now,txt:hhmm(now)+' · '+best.sym+' · '+best.side+' · confiance '+Math.round(best.conf*100)+'% (RSI '+Math.round(best.rsi)+' · ROC '+(best.roc*100).toFixed(2)+'%)'});
+      const openOk=best.side==='BUY'&&best.conf>=M.minConf&&M.open.length<2;
+      let decision=openOk?'🚀 position prise':(best.side==='SELL'?'SELL (suréchauffe) — pas de short en spot, signal seulement':'sous le seuil ('+Math.round(best.conf*100)+'% < seuil '+Math.round(M.minConf*100)+'%) — pas de position');
+      M.signals.unshift({t:now,txt:hhmm(now)+' · '+best.sym+' · '+best.side+' · confiance '+Math.round(best.conf*100)+'% (RSI '+Math.round(best.rsi)+' · ROC '+(best.roc*100).toFixed(2)+'%) · '+decision});
       M.lastScan=now;
       const real=!!(B.real&&B.real.on);
       if(best.side==='BUY'&&best.conf>=M.minConf&&M.open.length<2){
@@ -2556,7 +2558,7 @@ function momRender(){
   const lastS=M.signals[0];
   if(st)st.innerHTML=
     'Dernier signal : '+(lastS?lastS.txt.split(' · ').slice(1).join(' · '):'—')+'<br/>'+
-    'Signaux émis : '+M.signals.length+' · positions : '+M.open.length+'/2 · gagnantes : '+M.won+' · gain : <span class="'+(M.gain>=0?'up':'dn')+'">'+(M.gain>=0?'+':'')+M.gain.toFixed(3)+' USDT</span>'+
+    'Seuil : '+Math.round(M.minConf*100)+'% · signaux : '+M.signals.length+' · positions : '+M.open.length+'/2 · gagnantes : '+M.won+' · gain : <span class="'+(M.gain>=0?'up':'dn')+'">'+(M.gain>=0?'+':'')+M.gain.toFixed(3)+' USDT</span>'+
     (M.open.length?'<br/>'+M.open.map(p=>p.sym+' ouvert @ '+p.entry.toFixed(p.entry<1?6:2)+' → TP '+p.tp.toFixed(p.tp<1?6:2)).join(' · '):'');
   if(lg)lg.innerHTML=M.signals.slice(0,6).map(x=>x.txt).join('<br/>')||'Aucun signal encore — scan toutes les 2 minutes.';
   ['momStk','momCf','momTp','momSl'].forEach((id,ix)=>{
