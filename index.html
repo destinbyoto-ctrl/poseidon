@@ -458,7 +458,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
     <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
     <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🤖</span>Outils IA Binance</button>
     <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.4</b> — Multi-broker</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.5</b> — Multi-broker</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvelement : jamais 🔱</div>
   </div>
@@ -637,7 +637,44 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
         <div><label>CONFIANCE MIN %</label><input id="ghCf" type="number" step="1" min="40" max="90" onchange="ghSet()"></div>
       </div>
       <div id="ghLog" class="mono" style="font-size:11px;line-height:1.7;color:var(--txt2);max-height:110px;overflow:auto"></div>
-      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Mission : uniquement du vert. Il ouvre des positions IA à forte confiance et les referme immédiatement dès qu'elles touchent le vert (+0,35% par défaut), coupe vite le rouge. Cycle toutes les 8 secondes sur les 6 paires. La mise s'adapte à ton capital (% du solde dispo). En PAPIER, les frais Binance (0,1%/side) sont simulés pour des stats honnêtes. En mode RÉEL (si activé dans Réglages), il passe les vrais ordres via tes clés API.</div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Mission : uniquement du vert. Il ouvre des positions IA à forte confiance et les referme immédiatement dès qu'elles touchent le vert (+0,35% par défaut), coupe vite le rouge. Cycle toutes les 8 secondes sur les 6 paires. La mise s'adapte à ton capital (% du solde dispo). En PAPIER, les frais Binance (0,1%/side) sont simulés pour des stats honnêtes. En mode RÉEL (si activé dans Réglages), il passe les vrais ordres via tes clés API.</div><div class="setcard" style="grid-column:1/-1">
+      <h3>🚀 Momentum ML hybride — signal toutes les 2 minutes</h3>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="switch" id="momSw" onclick="momToggle()"></div>
+        <span id="momLbl" style="font-size:12px;color:var(--txt2)">Désarmé</span>
+        <span id="momMode" style="font-size:11px"></span>
+        <button class="btn sm ghost" onclick="momScan(true)">⚡ Scanner maintenant</button>
+      </div>
+      <div id="momStats" class="mono" style="font-size:11.5px;line-height:1.9;color:var(--txt2);margin-bottom:8px"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:8px">
+        <div><label>MISE (USDT)</label><input id="momStk" type="number" step="1" min="10" onchange="momSet()"></div>
+        <div><label>CONFIANCE MIN %</label><input id="momCf" type="number" step="1" min="50" max="95" onchange="momSet()"></div>
+        <div><label>PRISE %</label><input id="momTp" type="number" step="0.1" min="0.2" onchange="momSet()"></div>
+        <div><label>COUPE %</label><input id="momSl" type="number" step="0.1" min="0.1" onchange="momSet()"></div>
+      </div>
+      <div id="momLog" class="mono" style="font-size:11px;line-height:1.7;color:var(--txt2);max-height:110px;overflow:auto"></div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Comme le Momentum ML de Deriv : score multi-indicateurs (RSI, MACD, ATR, ROC) mélangé à ton modèle ML. Il émet un signal toutes les 2 minutes sur la meilleure paire ; au-dessus de la confiance min il prend la position (achat uniquement en spot) et la suit avec TP/SL. Prix vérifiés en continu par le flux rapide (toutes les 4 s).</div>
+    </div>
+    <div class="setcard" style="grid-column:1/-1">
+      <h3>🔄 RSI Mean Reversion — surventes extrêmes</h3>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="switch" id="revSw" onclick="revToggle()"></div>
+        <span id="revLbl" style="font-size:12px;color:var(--txt2)">Désarmé</span>
+        <span id="revMode" style="font-size:11px"></span>
+        <button class="btn sm ghost" onclick="revScan(true)">⚡ Scanner maintenant</button>
+      </div>
+      <div id="revStats" class="mono" style="font-size:11.5px;line-height:1.9;color:var(--txt2);margin-bottom:8px"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:8px">
+        <div><label>ACHAT RSI &lt;</label><input id="revRb" type="number" step="1" min="5" max="45" onchange="revSet()"></div>
+        <div><label>VENTE RSI &gt;</label><input id="revRs" type="number" step="1" min="55" max="95" onchange="revSet()"></div>
+        <div><label>MISE (USDT)</label><input id="revStk" type="number" step="1" min="10" onchange="revSet()"></div>
+        <div><label>PRISE %</label><input id="revTp" type="number" step="0.1" min="0.2" onchange="revSet()"></div>
+        <div><label>COUPE %</label><input id="revSl" type="number" step="0.1" min="0.1" onchange="revSet()"></div>
+      </div>
+      <div id="revLog" class="mono" style="font-size:11px;line-height:1.7;color:var(--txt2);max-height:110px;overflow:auto"></div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Comme le RSI Mean Reversion de Deriv : achète les surventes extrêmes (RSI &lt; 25 par défaut) avec confirmation de momentum (bougie verte), revend au retour à la moyenne (TP +1,5%, SL -0,8%). Signale aussi les surachats (RSI &gt; 75). Scan chaque minute.</div>
+    </div>
+    
     </div>
     </div>
 
@@ -845,7 +882,7 @@ function defaultState(){
     signals:[], open:[], closed:[], eqCurve:[{t:Date.now(),v:10000}],
     meta:{token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},
     deriv:{token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},
-    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},tv:'BTCUSDT'},
+    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},mom:{on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},rev:{on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},tv:'BTCUSDT'},
   };
 }
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
@@ -2084,6 +2121,7 @@ async function bnLoop(){
   if(!active||bnBusy)return;
   bnBusy=true;
   try{
+    await bnPrices();
     const scans=[];
     for(const s of B.pairs){
       const k=await bnKlines(s,300);
@@ -2274,31 +2312,10 @@ async function ghTick(manual){
     const real=!!(B.real&&B.real.on);
     let avail=(real&&B.real.account&&B.real.account.usdt)?B.real.account.usdt:B.usdt;
     const pxs={};
-    // 1) clôtures immédiates dès que vert
-    for(const p of [...G.open]){
-      try{
-        const k=await bnKlines(p.sym,3);
-        const px=+k[k.length-1][4]; pxs[p.sym]=px;
-        if(px>=p.tp||px<=p.sl){
-          const win=px>=p.tp;
-          let pnl;
-          if(real){
-            try{ await bnRealSell(p.sym,p.qty); pnl=p.stake*(px/p.entry-1); }
-            catch(e){ G.trades.unshift({t:Date.now(),txt:'⚠️ vente réelle échouée '+p.sym+' : '+e.message}); pnl=0; }
-          }else{
-            const fee=0.001;
-            pnl=p.qty*px*(1-fee)-p.stake;
-          }
-          if(B.real.account&&B.real.account.usdt)B.real.account.usdt+=pnl; else B.usdt+=pnl;
-          const row=B.trades.find(r=>r.kind==='GH'&&r.sym===p.sym&&r.pnl===null);
-          if(row){row.exit=px;row.pnl=+pnl.toFixed(3);row.tClose=Date.now();}
-          if(pnl>0)G.won++;
-          G.gain+=pnl;
-          G.open=G.open.filter(o=>o!==p);
-          G.trades.unshift({t:Date.now(),txt:(win?'🟢 VERT':'🔴 coupé')+' '+p.sym+' '+(pnl>=0?'+':'')+pnl.toFixed(3)+' USDT ('+(real?'réel':'papier')+')'});
-        }
-      }catch(e){}
-    }
+    // 1) clôtures immédiates dès que vert (flux prix rapide)
+    await bnPrices();
+    await ghCheckCloses();
+
     // 2) chasse : nouvelles positions IA puissantes
     if(G.open.length<4){
       for(const s of B.pairs){
@@ -2358,8 +2375,308 @@ function ghRender(){
   if(G.on&&!ghTimer&&S.auto&&S.auto.bnc)ghStart();
 }
 
+/* ===== v4.5 : FLUX PRIX RAPIDE + MOMENTUM ML + RSI MEAN REVERSION ===== */
+async function bnPrices(){
+  const B=S.bnc;
+  try{
+    const qs=encodeURIComponent(JSON.stringify(B.pairs));
+    const hosts=B.host?[B.host,...BN_HOSTS.filter(h=>h!==B.host)]:BN_HOSTS;
+    for(const h of hosts){
+      try{
+        const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),6000);
+        const r=await fetch(h+'/api/v3/ticker/price?symbols='+qs,{signal:ctl.signal}); clearTimeout(t);
+        if(!r.ok) throw new Error('HTTP');
+        const j=await r.json();
+        if(j&&j.length){const m={};j.forEach(x=>{if(x.symbol)m[x.symbol]=+x.price;});B.host=h;B.alt=false;B.px=m;B.pxT=Date.now();return m;}
+      }catch(e){}
+    }
+    B.alt=true;
+    const r=await fetch('https://api.bybit.com/v5/market/tickers?category=spot');
+    const j=await r.json();
+    if(j&&j.result&&j.result.list){const m={};j.result.list.forEach(x=>{if(B.pairs.includes(x.symbol))m[x.symbol]=+x.lastPrice;});if(Object.keys(m).length){B.px=m;B.pxT=Date.now();return m;}}
+  }catch(e){}
+  return null;
+}
+function rsiNow(c,i){
+  let g=0,l=0;const n=Math.min(14,i);
+  for(let k=i-n+1;k<=i;k++){const d=c[k]-c[k-1];if(d>0)g+=d;else l-=d;}
+  return 100-100/(1+g/(l||1e-9));
+}
+async function ghCheckCloses(){
+  const B=S.bnc,G=B.green; if(!G)return;
+  const real=!!(B.real&&B.real.on);
+  for(const p of [...(G.open||[])]){
+    const px=(B.px||{})[p.sym]; if(px==null)continue;
+    if(px>=p.tp||px<=p.sl){
+      const win=px>=p.tp; let pnl;
+      if(real){
+        try{ await bnRealSell(p.sym,p.qty); pnl=p.stake*(px/p.entry-1); }
+        catch(e){ G.trades.unshift({t:Date.now(),txt:'⚠️ vente réelle échouée '+p.sym+' : '+e.message}); pnl=0; }
+      }else{ pnl=p.qty*px*(1-0.001)-p.stake; }
+      if(B.real.account&&B.real.account.usdt)B.real.account.usdt+=pnl; else B.usdt+=pnl;
+      const row=B.trades.find(r=>r.kind==='GH'&&r.sym===p.sym&&r.pnl===null);
+      if(row){row.exit=px;row.pnl=+pnl.toFixed(3);row.tClose=Date.now();}
+      if(pnl>0)G.won++;
+      G.gain+=pnl;
+      G.open=G.open.filter(o=>o!==p);
+      G.trades.unshift({t:Date.now(),txt:(win?'🟢 VERT':'🔴 coupé')+' '+p.sym+' '+(pnl>=0?'+':'')+pnl.toFixed(3)+' USDT ('+(real?'réel':'papier')+')'});
+    }
+  }
+}
+/* ----- MOMENTUM ML HYBRIDE (signal toutes les 2 min) ----- */
+let momTimer=null,momBusy=false;
+function momToggle(){
+  const M=S.bnc.mom;
+  if(!M.on){
+    if(!S.auto||!S.auto.bnc){toast("⛔ Active d'abord le switch « Trading autonome » sur l'accueil",'⛔');return;}
+    M.on=true;
+    if(momTimer)clearInterval(momTimer);
+    momTimer=setInterval(momScan,120000);
+    momScan(true);
+    toast('🚀 Momentum ML ARMÉ — signal toutes les 2 minutes','🚀');
+  }else{
+    M.on=false;
+    if(momTimer){clearInterval(momTimer);momTimer=null;}
+    toast('Momentum ML désarmé','⏸️');
+  }
+  save(); momRender();
+}
+function momSet(){
+  const M=S.bnc.mom;
+  M.stake=Math.max(10,+document.getElementById('momStk').value||M.stake);
+  M.minConf=Math.max(0.5,Math.min(0.95,(+document.getElementById('momCf').value||Math.round(M.minConf*100))/100));
+  M.tp=Math.max(0.2,+document.getElementById('momTp').value||M.tp);
+  M.sl=Math.max(0.1,+document.getElementById('momSl').value||M.sl);
+  save(); momRender(); toast('Réglages Momentum mis à jour ✔','🚀');
+}
+function emaArr(c,p){const k=2/(p+1);const o=[];let e=c[0];for(let i=0;i<c.length;i++){e=i?c[i]*k+e*(1-k):c[0];o.push(e);}return o;}
+function momScore(c,v,i){
+  const rsi=rsiNow(c,i);
+  const e12=emaArr(c,12),e26=emaArr(c,26);
+  const macd=[];for(let k=0;k<c.length;k++)macd.push(e12[k]-e26[k]);
+  const hist=macd[i]-emaArr(macd,9)[i];
+  let tr=0;const m=Math.min(14,i);
+  for(let k=i-m+1;k<=i;k++)tr+=Math.abs(c[k]-c[k-1]);
+  const atr=tr/m||1e-9;
+  const roc=c[i]/c[i-10]-1;
+  let mom=0.35*Math.max(-1,Math.min(1,(rsi-50)/25))
+        +0.35*Math.max(-1,Math.min(1,hist/(atr*0.4)))
+        +0.30*Math.max(-1,Math.min(1,roc*100/0.35));
+  const B=S.bnc;
+  const ml=B.ml?bnPredict(bnFeat(c,v,i)):0.5;
+  mom=0.75*mom+0.25*(ml-0.5)*2;
+  return {mom,conf:Math.min(0.97,0.5+0.45*Math.abs(mom)),side:mom>=0?'BUY':'SELL',rsi,roc};
+}
+async function momScan(manual){
+  const B=S.bnc,M=B.mom;
+  if(!M.on&&!manual)return;
+  if(!S.auto||!S.auto.bnc){momRender();return;}
+  if(momBusy)return;
+  momBusy=true;
+  try{
+    await bnPrices();
+    let best=null;
+    for(const s of B.pairs){
+      if(M.open.find(o=>o.sym===s))continue;
+      try{
+        const k=await bnKlines(s,120);
+        const c=k.map(x=>+x[4]),v=k.map(x=>+x[6]);
+        const sc=momScore(c,v,c.length-1);
+        sc.sym=s; sc.px=c[c.length-1];
+        if(!best||sc.conf>best.conf)best=sc;
+      }catch(e){}
+    }
+    if(best){
+      const now=Date.now();
+      M.signals.unshift({t:now,txt:hhmm(now)+' · '+best.sym+' · '+best.side+' · confiance '+Math.round(best.conf*100)+'% (RSI '+Math.round(best.rsi)+' · ROC '+(best.roc*100).toFixed(2)+'%)'});
+      M.lastScan=now;
+      const real=!!(B.real&&B.real.on);
+      if(best.side==='BUY'&&best.conf>=M.minConf&&M.open.length<2){
+        const stake=Math.max(10,+M.stake||20);
+        let entry=best.px,qty=stake/entry*(real?1:0.999),ok=true;
+        if(real){
+          try{const r=await bnRealBuy(best.sym,stake);if(r&&r.executedQty){entry=+r.cummulativeQuoteQty/+r.executedQty;qty=+r.executedQty;}else ok=false;}
+          catch(e){ok=false;M.signals.unshift({t:now,txt:'⚠️ achat réel échoué '+best.sym+' : '+(e.message||'')});}
+        }
+        if(ok){
+          M.open.push({t:now,sym:best.sym,stake,qty,entry,tp:entry*(1+M.tp/100),sl:entry*(1-M.sl/100),conf:best.conf});
+          B.trades.unshift({t:now,sym:best.sym,side:'BUY',kind:'MOM',amt:stake,entry,exit:null,pnl:null});
+          if(B.trades.length>120)B.trades.length=120;
+        }
+      }
+    }
+    while(M.signals.length>40)M.signals.length=40;
+    save();
+  }catch(e){}
+  momBusy=false;
+  momRender();
+  try{render()}catch(e){}
+}
+async function momCheckCloses(){
+  const B=S.bnc,M=B.mom; if(!M)return;
+  const real=!!(B.real&&B.real.on);
+  for(const p of [...(M.open||[])]){
+    const px=(B.px||{})[p.sym]; if(px==null)continue;
+    if(px>=p.tp||px<=p.sl){
+      const win=px>=p.tp; let pnl;
+      if(real){
+        try{ await bnRealSell(p.sym,p.qty); pnl=p.stake*(px/p.entry-1); }
+        catch(e){ pnl=0; }
+      }else{ pnl=p.qty*px*(1-0.001)-p.stake; }
+      if(B.real.account&&B.real.account.usdt)B.real.account.usdt+=pnl; else B.usdt+=pnl;
+      const row=B.trades.find(r=>r.kind==='MOM'&&r.sym===p.sym&&r.pnl===null);
+      if(row){row.exit=px;row.pnl=+pnl.toFixed(3);row.tClose=Date.now();}
+      if(pnl>0)M.won++;
+      M.gain+=pnl;
+      M.open=M.open.filter(o=>o!==p);
+      M.signals.unshift({t:Date.now(),txt:hhmm(Date.now())+' · '+(win?'🟢 MOMENTUM gagnant':'🔴 momentum coupé')+' '+p.sym+' '+(pnl>=0?'+':'')+pnl.toFixed(3)+' USDT'});
+    }
+  }
+}
+function momRender(){
+  const B=S.bnc,M=B.mom;
+  const sw=document.getElementById('momSw'),lb=document.getElementById('momLbl'),md=document.getElementById('momMode'),st=document.getElementById('momStats'),lg=document.getElementById('momLog');
+  if(!sw)return;
+  sw.classList.toggle('on',!!M.on);
+  if(lb)lb.textContent=M.on?'ARMÉ — signal toutes les 2 min 🚀':'Désarmé';
+  const real=!!(B.real&&B.real.on);
+  if(md)md.innerHTML=real?'<span class="up">MODE RÉEL</span>':'<span style="color:var(--amber)">mode papier</span>';
+  const lastS=M.signals[0];
+  if(st)st.innerHTML=
+    'Dernier signal : '+(lastS?lastS.txt.split(' · ').slice(1).join(' · '):'—')+'<br/>'+
+    'Signaux émis : '+M.signals.length+' · positions : '+M.open.length+'/2 · gagnantes : '+M.won+' · gain : <span class="'+(M.gain>=0?'up':'dn')+'">'+(M.gain>=0?'+':'')+M.gain.toFixed(3)+' USDT</span>'+
+    (M.open.length?'<br/>'+M.open.map(p=>p.sym+' ouvert @ '+p.entry.toFixed(p.entry<1?6:2)+' → TP '+p.tp.toFixed(p.tp<1?6:2)).join(' · '):'');
+  if(lg)lg.innerHTML=M.signals.slice(0,6).map(x=>x.txt).join('<br/>')||'Aucun signal encore — scan toutes les 2 minutes.';
+  ['momStk','momCf','momTp','momSl'].forEach((id,ix)=>{
+    const el=document.getElementById(id); if(el&&document.activeElement!==el)el.value=[Math.round(M.stake),Math.round(M.minConf*100),M.tp,M.sl][ix];
+  });
+}
+/* ----- RSI MEAN REVERSION ----- */
+let revTimer=null,revBusy=false;
+function revToggle(){
+  const M=S.bnc.rev;
+  if(!M.on){
+    if(!S.auto||!S.auto.bnc){toast("⛔ Active d'abord le switch « Trading autonome » sur l'accueil",'⛔');return;}
+    M.on=true;
+    if(revTimer)clearInterval(revTimer);
+    revTimer=setInterval(revScan,60000);
+    revScan(true);
+    toast('🔄 RSI Mean Reversion ARMÉ — scan chaque minute','🔄');
+  }else{
+    M.on=false;
+    if(revTimer){clearInterval(revTimer);revTimer=null;}
+    toast('RSI Mean Reversion désarmé','⏸️');
+  }
+  save(); revRender();
+}
+function revSet(){
+  const M=S.bnc.rev;
+  M.rsiBuy=Math.max(5,Math.min(45,+document.getElementById('revRb').value||M.rsiBuy));
+  M.rsiSell=Math.max(55,Math.min(95,+document.getElementById('revRs').value||M.rsiSell));
+  M.stake=Math.max(10,+document.getElementById('revStk').value||M.stake);
+  M.tp=Math.max(0.2,+document.getElementById('revTp').value||M.tp);
+  M.sl=Math.max(0.1,+document.getElementById('revSl').value||M.sl);
+  save(); revRender(); toast('Réglages RSI mis à jour ✔','🔄');
+}
+async function revScan(manual){
+  const B=S.bnc,M=B.rev;
+  if(!M.on&&!manual)return;
+  if(!S.auto||!S.auto.bnc){revRender();return;}
+  if(revBusy)return;
+  revBusy=true;
+  try{
+    await bnPrices();
+    for(const s of B.pairs){
+      if(M.open.find(o=>o.sym===s))continue;
+      try{
+        const k=await bnKlines(s,120);
+        const c=k.map(x=>+x[4]);
+        const i=c.length-1, px=c[i];
+        const rsi=rsiNow(c,i);
+        const up=px>c[i-1];
+        if(rsi<=M.rsiBuy&&up){
+          const conf=Math.min(0.95,0.55+0.45*(M.rsiBuy-rsi)/M.rsiBuy);
+          const now=Date.now();
+          M.signals.unshift({t:now,txt:hhmm(now)+' · '+s+' · BUY survente RSI '+rsi.toFixed(0)+' (confiance '+Math.round(conf*100)+'%)'});
+          const real=!!(B.real&&B.real.on);
+          if(M.open.length<2){
+            const stake=Math.max(10,+M.stake||20);
+            let entry=px,qty=stake/entry*(real?1:0.999),ok=true;
+            if(real){
+              try{const r=await bnRealBuy(s,stake);if(r&&r.executedQty){entry=+r.cummulativeQuoteQty/+r.executedQty;qty=+r.executedQty;}else ok=false;}
+              catch(e){ok=false;M.signals.unshift({t:now,txt:'⚠️ achat réel échoué '+s+' : '+(e.message||'')});}
+            }
+            if(ok){
+              M.open.push({t:now,sym:s,stake,qty,entry,tp:entry*(1+M.tp/100),sl:entry*(1-M.sl/100),conf});
+              B.trades.unshift({t:now,sym:s,side:'BUY',kind:'REV',amt:stake,entry,exit:null,pnl:null});
+              if(B.trades.length>120)B.trades.length=120;
+            }
+          }
+        }else if(rsi>=M.rsiSell){
+          M.signals.unshift({t:Date.now(),txt:hhmm(Date.now())+' · '+s+' · SURACHAT RSI '+rsi.toFixed(0)+' — vente conseillée (signal)'});
+        }
+      }catch(e){}
+    }
+    while(M.signals.length>40)M.signals.length=40;
+    save();
+  }catch(e){}
+  revBusy=false;
+  revRender();
+  try{render()}catch(e){}
+}
+async function revCheckCloses(){
+  const B=S.bnc,M=B.rev; if(!M)return;
+  const real=!!(B.real&&B.real.on);
+  for(const p of [...(M.open||[])]){
+    const px=(B.px||{})[p.sym]; if(px==null)continue;
+    if(px>=p.tp||px<=p.sl){
+      const win=px>=p.tp; let pnl;
+      if(real){
+        try{ await bnRealSell(p.sym,p.qty); pnl=p.stake*(px/p.entry-1); }
+        catch(e){ pnl=0; }
+      }else{ pnl=p.qty*px*(1-0.001)-p.stake; }
+      if(B.real.account&&B.real.account.usdt)B.real.account.usdt+=pnl; else B.usdt+=pnl;
+      const row=B.trades.find(r=>r.kind==='REV'&&r.sym===p.sym&&r.pnl===null);
+      if(row){row.exit=px;row.pnl=+pnl.toFixed(3);row.tClose=Date.now();}
+      if(pnl>0)M.won++;
+      M.gain+=pnl;
+      M.open=M.open.filter(o=>o!==p);
+      M.signals.unshift({t:Date.now(),txt:hhmm(Date.now())+' · '+(win?'🟢 REVERSION gagnante':'🔴 reversion coupée')+' '+p.sym+' '+(pnl>=0?'+':'')+pnl.toFixed(3)+' USDT'});
+    }
+  }
+}
+function revRender(){
+  const B=S.bnc,M=B.rev;
+  const sw=document.getElementById('revSw'),lb=document.getElementById('revLbl'),md=document.getElementById('revMode'),st=document.getElementById('revStats'),lg=document.getElementById('revLog');
+  if(!sw)return;
+  sw.classList.toggle('on',!!M.on);
+  if(lb)lb.textContent=M.on?'ARMÉ — surventes extrêmes 🔄':'Désarmé';
+  const real=!!(B.real&&B.real.on);
+  if(md)md.innerHTML=real?'<span class="up">MODE RÉEL</span>':'<span style="color:var(--amber)">mode papier</span>';
+  if(st)st.innerHTML=
+    'Positions : '+M.open.length+'/2 · gagnantes : '+M.won+' · gain : <span class="'+(M.gain>=0?'up':'dn')+'">'+(M.gain>=0?'+':'')+M.gain.toFixed(3)+' USDT</span><br/>'+
+    (M.open.length?M.open.map(p=>p.sym+' @ '+p.entry.toFixed(p.entry<1?6:2)+' → TP '+p.tp.toFixed(p.tp<1?6:2)+' / SL '+p.sl.toFixed(p.sl<1?6:2)).join(' · '):'En attente de survente (RSI < '+Math.round(M.rsiBuy)+')...');
+  if(lg)lg.innerHTML=M.signals.slice(0,6).map(x=>x.txt).join('<br/>')||'Aucun signal encore — scan chaque minute.';
+  ['revRb','revRs','revStk','revTp','revSl'].forEach((id,ix)=>{
+    const el=document.getElementById(id); if(el&&document.activeElement!==el)el.value=[Math.round(M.rsiBuy),Math.round(M.rsiSell),Math.round(M.stake),M.tp,M.sl][ix];
+  });
+}
+/* flux prix 4 s : positions en cours toujours à jour */
+async function pxTick(){
+  const B=S.bnc;
+  const ghOn=!!(B.green&&B.green.on), momOn=!!(B.mom&&B.mom.on), revOn=!!(B.rev&&B.rev.on);
+  let vis=false;
+  try{vis=S.broker==='bnc'&&(document.getElementById('v-bnc').classList.contains('on')||document.getElementById('v-home').classList.contains('on'));}catch(e){}
+  if(!ghOn&&!momOn&&!revOn&&!vis)return;
+  await bnPrices();
+  if(ghOn)await ghCheckCloses();
+  if(momOn)await momCheckCloses();
+  if(revOn)await revCheckCloses();
+  if(vis){ghRender();momRender();revRender();try{render()}catch(e){}}
+}
+
 function bnRender(){
-  bnSrvRender(); bnSrvStatus(); tvInit(); ghRender();
+  bnSrvRender(); bnSrvStatus(); tvInit(); ghRender(); momRender(); revRender();
   const B=S.bnc;
   if(!document.getElementById('bnStatus'))return;
   document.getElementById('bnStatus').innerHTML='<span class="'+(B.status.startsWith('Binance OK')?'up':'dn')+'">'+B.status+'</span> · Solde démo : <b>'+fmt(B.usdt,2)+' USDT</b>';
@@ -2395,7 +2712,7 @@ function bnRender(){
     if(B.diag){h+='<div style="margin-top:6px">'+B.diag.lines.map(l=>'<div>'+l+'</div>').join('')+(B.diag.done?'':'<div>⏳ test en cours…</div>')+'</div>';}
     rs.innerHTML=h;
   }
-  document.getElementById('bnLog').innerHTML=B.trades.slice(0,40).map(t=>'<tr><td>'+hhmm(t.t)+'</td><td>'+(t.kind==='ACC-BTC'?'🪙 ACC':(t.kind==='GH'?'🟢 CHASSE':'📈 SCALP'))+'</td><td>'+t.sym+'</td><td class="'+(t.side==='BUY'?'up':'dn')+'">'+t.side+'</td><td>'+fmt(t.amt,2)+'</td><td>'+fmt(t.entry,t.entry>100?2:5)+'</td><td>'+(t.exit!=null?fmt(t.exit,t.exit>100?2:5):'—')+'</td><td class="'+((t.pnl||0)>=0?'up':'dn')+'">'+(t.pnl!=null?t.pnl.toFixed(2):'ouverte')+'</td></tr>').join('')||'<tr><td colspan="8" style="padding:12px;color:var(--txt3)">Aucun trade pour l\u2019instant.</td></tr>';
+  document.getElementById('bnLog').innerHTML=B.trades.slice(0,40).map(t=>'<tr><td>'+hhmm(t.t)+'</td><td>'+(t.kind==='ACC-BTC'?'🪙 ACC':(t.kind==='GH'?'🟢 CHASSE':(t.kind==='MOM'?'🚀 MOM':(t.kind==='REV'?'🔄 RSI':'📈 SCALP'))))+'</td><td>'+t.sym+'</td><td class="'+(t.side==='BUY'?'up':'dn')+'">'+t.side+'</td><td>'+fmt(t.amt,2)+'</td><td>'+fmt(t.entry,t.entry>100?2:5)+'</td><td>'+(t.exit!=null?fmt(t.exit,t.exit>100?2:5):'—')+'</td><td class="'+((t.pnl||0)>=0?'up':'dn')+'">'+(t.pnl!=null?t.pnl.toFixed(2):'ouverte')+'</td></tr>').join('')||'<tr><td colspan="8" style="padding:12px;color:var(--txt3)">Aucun trade pour l\u2019instant.</td></tr>';
 }
 /* ---------- FOND ANIMÉ : GRAPHIQUES ---------- */
 (function(){
@@ -2584,11 +2901,14 @@ function bhRender(){
     acc=(R.on&&R.account)?('<b class="up">✔ '+(R.account.accountType||'SPOT')+'</b> · <span class="dn">RÉEL</span>'):'Démo locale — clés API dans Réglages';
     bl=(R.on&&R.account)?(R.account.usdt.toFixed(2)+' USDT <span class="dn">RÉEL</span>'):(fmt(B.usdt,2)+' USDT <span style="color:var(--txt3)">(démo)</span>');
     rp=(B.trades||[]).reduce((a,c)=>a+(c.pnl||0),0);
-    const G=B.green||{open:[],gain:0,won:0};
-    fp=(B.open||[]).reduce((a,p)=>{const sc=(B.scans||[]).find(s=>s.sym===p.sym);return a+(sc?(sc.px-p.entry)*p.qty:0);},0);
-    fp+=G.open.reduce((a,p)=>{const sc=(B.scans||[]).find(s=>s.sym===p.sym);return a+(sc?(sc.px-p.entry)*p.qty:0);},0);
+    const G=B.green||{open:[],gain:0,won:0},MO=B.mom||{open:[],gain:0,won:0,signals:[]},RV=B.rev||{open:[],gain:0,won:0,signals:[]};
+    const pxOf=sym=>{const p=(B.px||{})[sym];if(p!=null)return p;const sc=(B.scans||[]).find(s=>s.sym===sym);return sc?sc.px:null;};
+    const flt=list=>list.reduce((a,p)=>{const px=pxOf(p.sym);return a+(px!=null?(px-p.entry)*p.qty:0);},0);
+    fp=flt(B.open||[])+flt(G.open)+flt(MO.open)+flt(RV.open);
     const ghOn=G.on&&G.open.length>0;
     acc+='<br/>🟢 Chasseur : '+G.won+' vert'+(G.won>1?'s':'o')+' · gain <span class="'+(G.gain>=0?'up':'dn')+'">'+(G.gain>=0?'+':'')+G.gain.toFixed(3)+' USDT</span>'+(ghOn?' · '+G.open.length+' en chasse':'')+(G.on?' · <span class="up">ARMÉ</span>':'');
+    if(MO.on)acc+='<br/>🚀 Momentum : '+(MO.signals||[]).length+' signaux · '+MO.open.length+' en cours · gain <span class="'+(MO.gain>=0?'up':'dn')+'">'+(MO.gain>=0?'+':'')+MO.gain.toFixed(3)+' USDT</span>';
+    if(RV.on)acc+='<br/>🔄 RSI : '+(RV.signals||[]).length+' signaux · '+RV.open.length+' en cours · gain <span class="'+(RV.gain>=0?'up':'dn')+'">'+(RV.gain>=0?'+':'')+RV.gain.toFixed(3)+' USDT</span>';
     histVisible=false;
   }
   if(hw)hw.style.display=histVisible?'block':'none';
@@ -2646,9 +2966,10 @@ function boot(){
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
   S.broker=S.broker||'';
-  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},tv:'BTCUSDT'},S.bnc||{});
+  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},mom:{on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},rev:{on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},tv:'BTCUSDT'},S.bnc||{});
   S.bnc.srv=!!S.bnc.srv; S.auto=Object.assign({dv:false,ma:false,bnc:false},S.auto||{});
   S.bnc.green=Object.assign({on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},S.bnc.green||{}); S.bnc.tv=S.bnc.tv||'BTCUSDT';
+  S.bnc.mom=Object.assign({on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},S.bnc.mom||{}); S.bnc.rev=Object.assign({on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},S.bnc.rev||{});
   S.bnc.real=Object.assign({apiKey:'',apiSecret:'',on:false,account:null,status:''},S.bnc.real||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
@@ -2658,6 +2979,7 @@ function boot(){
   for(let i=0;i<60;i++)tickPrices();
   brokerFlow();
   setInterval(bnLoop,15000);
+setInterval(pxTick,4000);
   setInterval(bhRender,5000);
   render(); tickClock();
   // boucle moteur — tick 2s
