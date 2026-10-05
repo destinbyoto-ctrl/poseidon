@@ -458,7 +458,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
     <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
     <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🤖</span>Outils IA Binance</button>
     <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.5</b> — Multi-broker</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.6</b> — Multi-broker</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvelement : jamais 🔱</div>
   </div>
@@ -672,7 +672,25 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
         <div><label>COUPE %</label><input id="revSl" type="number" step="0.1" min="0.1" onchange="revSet()"></div>
       </div>
       <div id="revLog" class="mono" style="font-size:11px;line-height:1.7;color:var(--txt2);max-height:110px;overflow:auto"></div>
-      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Comme le RSI Mean Reversion de Deriv : achète les surventes extrêmes (RSI &lt; 25 par défaut) avec confirmation de momentum (bougie verte), revend au retour à la moyenne (TP +1,5%, SL -0,8%). Signale aussi les surachats (RSI &gt; 75). Scan chaque minute.</div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Comme le RSI Mean Reversion de Deriv : achète les surventes extrêmes (RSI &lt; 25 par défaut) avec confirmation de momentum (bougie verte), revend au retour à la moyenne (TP +1,5%, SL -0,8%). Signale aussi les surachats (RSI &gt; 75). Scan chaque minute.</div><div class="setcard" style="grid-column:1/-1">
+      <h3>🎯 Sniper Élite — BTCUSDT uniquement</h3>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="switch" id="snpSw" onclick="snpToggle()"></div>
+        <span id="snpLbl" style="font-size:12px;color:var(--txt2)">Désarmé</span>
+        <span id="snpMode" style="font-size:11px"></span>
+        <button class="btn sm ghost" onclick="snpScan(true)">⚡ Vérifier maintenant</button>
+      </div>
+      <div id="snpStats" class="mono" style="font-size:11.5px;line-height:1.9;color:var(--txt2);margin-bottom:8px"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:8px">
+        <div><label>MISE (USDT)</label><input id="snpStk" type="number" step="1" min="10" onchange="snpSet()"></div>
+        <div><label>CONFIANCE MIN %</label><input id="snpCf" type="number" step="1" min="60" max="95" onchange="snpSet()"></div>
+        <div><label>PRISE %</label><input id="snpTp" type="number" step="0.1" min="0.2" onchange="snpSet()"></div>
+        <div><label>COUPE %</label><input id="snpSl" type="number" step="0.1" min="0.1" onchange="snpSet()"></div>
+      </div>
+      <div id="snpLog" class="mono" style="font-size:11px;line-height:1.7;color:var(--txt2);max-height:110px;overflow:auto"></div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Entrée élite : il attend la confluence parfaite sur BTCUSDT — momentum 1 min + tendance 5 min alignées, pic de volume, RSI en zone saine, et ton modèle ML. Un seul tir à la fois, vérification toutes les 30 secondes. Sans confluence parfaite, il ne tire pas.</div>
+    </div>
+    
     </div>
     
     </div>
@@ -700,8 +718,9 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
   <div class="view" id="v-settings">
     <div class="vhead"><h2>Réglages</h2><span class="sub">Compte, risque, symboles</span></div>
     <div class="setgrid">
+      <div style="grid-column:1/-1;margin:6px 0 -6px;padding:12px 16px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(0,168,234,.08);border:1px solid rgba(0,168,234,.3);color:var(--blue)">🔵 MT4 / MT5 — Copieur de signaux · réglages propres à ce broker</div>
       <div class="setcard">
-        <h3>💰 Compte</h3>
+        <h3>💰 Compte copieur (démo MT4/MT5)</h3>
         <div class="setrow"><div class="l">Balance<small>Démo : 10 000 $</small></div><input type="number" id="setBal" step="100"/></div>
         <div class="setrow"><div class="l">Mode de risque<small>Comment la taille est calculée</small></div>
           <select id="setRiskMode"><option value="lot">Lot fixe</option><option value="usd">$ fixe / trade</option><option value="pct">% de la balance</option></select></div>
@@ -745,6 +764,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
         <p style="font-size:11.5px;color:var(--txt3);margin-top:10px">Tout est stocké localement dans votre navigateur (localStorage). Aucune donnée ne quitte cet appareil.</p>
       </div>
     
+    <div style="grid-column:1/-1;margin:6px 0 -6px;padding:12px 16px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(240,97,109,.08);border:1px solid rgba(240,97,109,.3);color:var(--red)">🔴 Deriv — réglages propres à ce broker</div>
     <div class="setcard" style="grid-column:1/-1">
         <h3>🟢 Deriv direct — sans abonnement</h3>
         <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Trade les indices de volatilité directement sur ton compte plateforme Deriv, depuis ton navigateur. Zéro MetaAPI, zéro abonnement. Le token reste sur ton téléphone.</p>
@@ -772,7 +792,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
         <p style="font-size:11px;color:var(--txt3);margin-top:10px">Symboles pour tes stratégies (bouton ✎ sur chaque carte) : R_10, R_25, R_50, R_75, R_100</p>
       </div>
     <div class="setcard" style="grid-column:1/-1">
-        <h3>🔗 Compte MetaAPI — exécution réelle</h3>
+        <h3>🔗 Compte MetaAPI (MT4/MT5) — exécution réelle</h3>
         <p style="font-size:12.5px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Reliez votre compte MT4/MT5 Deriv via MetaAPI. Le token reste dans votre navigateur (localStorage), jamais dans la page partagée.</p>
         <div class="frow" style="grid-template-columns:2fr 1fr;align-items:end">
           <div><label>Token MetaAPI</label><input id="maToken" type="password" placeholder="eyJhbGci..."/></div>
@@ -793,6 +813,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
         <div id="maStatus" class="mono" style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.7"></div>
         <div id="maAccount" class="mono" style="font-size:12px;color:var(--teal);margin-top:6px;line-height:1.8"></div>
       </div>
+    <div style="grid-column:1/-1;margin:6px 0 -6px;padding:12px 16px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.35);color:var(--gold2)">🟡 Binance — réglages propres à ce broker</div>
     <div class="setcard">
       <h3>🔑 Compte Binance réel</h3>
       <div style="font-size:12px;color:var(--txt3);line-height:1.6;margin-bottom:10px">Créez la clé sur binance.com → Profil → API Management : activez « Enable Spot &amp; Margin Trading », laissez les retraits désactivés, et ne mettez aucune restriction IP. Testez d'abord en démo quelques jours.</div>
@@ -882,7 +903,7 @@ function defaultState(){
     signals:[], open:[], closed:[], eqCurve:[{t:Date.now(),v:10000}],
     meta:{token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},
     deriv:{token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},
-    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},mom:{on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},rev:{on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},tv:'BTCUSDT'},
+    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},mom:{on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},rev:{on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},snp:{on:false,stake:25,minConf:0.75,tp:1.0,sl:0.5,open:[],signals:[],won:0,gain:0,lastScan:0},tv:'BTCUSDT'},
   };
 }
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
@@ -1424,22 +1445,13 @@ function renderTrades(){
 function closeOne(id){closeTrade(id,'MANUAL');render()}
 
 /* ---------- UI: SETTINGS ---------- */
+function fval(id,v){const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v==null?'':v;}
 function renderSettings(){
   const st=S.settings;
-  document.getElementById('setBal').value=S.balance;
-  document.getElementById('setRiskMode').value=st.riskMode;
-  document.getElementById('setRiskVal').value=st.riskVal;
-  document.getElementById('setDD').value=st.dd;
-  document.getElementById('setDDClose').value=st.ddClose;
-  document.getElementById('setMaxTrades').value=st.maxTrades;
-  document.getElementById('setOpp').value=st.opp;
-  document.getElementById('setSLOv').value=st.slOv;
-  document.getElementById('setRR').value=st.rr;
-  document.getElementById('setBE').value=st.be;
-  document.getElementById('setTrail').value=st.trail;
-  document.getElementById('setH1').value=st.h1;
-  document.getElementById('setH2').value=st.h2;
-  document.getElementById('setEntry').value=st.entry;
+  fval('setBal',S.balance); fval('setRiskMode',st.riskMode); fval('setRiskVal',st.riskVal);
+  fval('setDD',st.dd); fval('setDDClose',st.ddClose); fval('setMaxTrades',st.maxTrades); fval('setOpp',st.opp);
+  fval('setSLOv',st.slOv); fval('setRR',st.rr); fval('setBE',st.be); fval('setTrail',st.trail);
+  fval('setH1',st.h1); fval('setH2',st.h2); fval('setEntry',st.entry);
   document.getElementById('mapGrid').innerHTML=S.mappings.map((m,i)=>`
     <div class="maprow"><input value="${m.a}" onchange="S.mappings[${i}].a=this.value;save()"/><input value="${m.b}" onchange="S.mappings[${i}].b=this.value;save()"/><button onclick="S.mappings.splice(${i},1);save();render()">✖</button></div>`).join('');
 }
@@ -1952,19 +1964,19 @@ async function bnFetch(path){
   }
   throw new Error('Binance injoignable');
 }
-async function bnKlines(sym,limit){
+async function bnKlines(sym,limit,iv){
   const hosts=S.bnc.host?[S.bnc.host,...BN_HOSTS.filter(h=>h!==S.bnc.host)]:BN_HOSTS;
   for(const h of hosts){
     try{
       const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),8000);
-      const r=await fetch(h+'/api/v3/klines?symbol='+sym+'&interval=1m&limit='+limit,{signal:ctl.signal}); clearTimeout(t);
+      const r=await fetch(h+'/api/v3/klines?symbol='+sym+'&interval='+(iv||'1m')+'&limit='+limit,{signal:ctl.signal}); clearTimeout(t);
       if(!r.ok) throw new Error('HTTP '+r.status);
       const j=await r.json();
       S.bnc.host=h; S.bnc.alt=false; return j;
     }catch(e){}
   }
   S.bnc.alt=true;
-  const r=await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol='+sym+'&interval=1&limit='+Math.min(limit,1000));
+  const r=await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol='+sym+'&interval='+((iv||'1m').replace('m',''))+'&limit='+Math.min(limit,1000));
   const j=await r.json();
   if(j.retCode!==0) throw new Error(j.retMsg||'Bybit indisponible');
   return j.result.list.slice().reverse().map(x=>[+x[0],x[1],x[2],x[3],x[4],x[4],x[5]]);
@@ -2661,22 +2673,142 @@ function revRender(){
     const el=document.getElementById(id); if(el&&document.activeElement!==el)el.value=[Math.round(M.rsiBuy),Math.round(M.rsiSell),Math.round(M.stake),M.tp,M.sl][ix];
   });
 }
+/* ----- SNIPER ÉLITE BTCUSDT (confluence multi-conditions) ----- */
+let snpTimer=null,snpBusy=false;
+function snpToggle(){
+  const M=S.bnc.snp;
+  if(!M.on){
+    if(!S.auto||!S.auto.bnc){toast("⛔ Active d'abord le switch « Trading autonome » sur l'accueil",'⛔');return;}
+    M.on=true;
+    if(snpTimer)clearInterval(snpTimer);
+    snpTimer=setInterval(snpScan,30000);
+    snpScan(true);
+    toast('🎯 Sniper Élite ARMÉ — BTCUSDT, il attend le tir parfait','🎯');
+  }else{
+    M.on=false;
+    if(snpTimer){clearInterval(snpTimer);snpTimer=null;}
+    toast('Sniper Élite désarmé','⏸️');
+  }
+  save(); snpRender();
+}
+function snpSet(){
+  const M=S.bnc.snp;
+  M.stake=Math.max(10,+document.getElementById('snpStk').value||M.stake);
+  M.minConf=Math.max(0.6,Math.min(0.95,(+document.getElementById('snpCf').value||Math.round(M.minConf*100))/100));
+  M.tp=Math.max(0.2,+document.getElementById('snpTp').value||M.tp);
+  M.sl=Math.max(0.1,+document.getElementById('snpSl').value||M.sl);
+  save(); snpRender(); toast('Réglages Sniper mis à jour ✔','🎯');
+}
+function snpConfluence(c1,v1,c5){
+  const i=c1.length-1, px=c1[i];
+  const up1m=(px/c1[i-3]-1)>0.0008;
+  const e5=emaArr(c5,9);
+  const trend5=px>e5[e5.length-1]&&c5[c5.length-1]>c5[c5.length-3];
+  const avg20=v1.slice(-20).reduce((a,b)=>a+b,0)/Math.min(20,v1.length);
+  const volOk=avg20?v1[i]>1.5*avg20:false;
+  const rsi=rsiNow(c1,i);
+  const rsiOk=rsi>=45&&rsi<=72;
+  const B=S.bnc;
+  const ml=B.ml?bnPredict(bnFeat(c1,v1,i)):0.5;
+  const mlBonus=B.ml?0.10*2*(ml-0.5):0.10;
+  let conf=0.25+(up1m?0.18:0)+(trend5?0.20:0)+(volOk?0.14:0)+(rsiOk?0.13:0)+mlBonus;
+  conf=Math.max(0,Math.min(0.97,conf));
+  return {conf,up1m,trend5,volOk,rsi,rsiOk,px,checks:[up1m?'✔ mom 1m':'✖ mom 1m',trend5?'✔ trend 5m':'✖ trend 5m',volOk?'✔ volume':'✖ volume',rsiOk?'✔ RSI '+rsi.toFixed(0):'✖ RSI '+rsi.toFixed(0),B.ml?('✔ ML '+Math.round(ml*100)+'%'):'· ML non entraîné'].join(' · ')};
+}
+async function snpScan(manual){
+  const B=S.bnc,M=B.snp;
+  if(!M.on&&!manual)return;
+  if(!S.auto||!S.auto.bnc){snpRender();return;}
+  if(snpBusy)return;
+  snpBusy=true;
+  try{
+    await bnPrices();
+    if(!M.open.length){
+      const k1=await bnKlines('BTCUSDT',120);
+      const k5=await bnKlines('BTCUSDT',60,'5m');
+      const c1=k1.map(x=>+x[4]),v1=k1.map(x=>+x[6]),c5=k5.map(x=>+x[4]);
+      const sc=snpConfluence(c1,v1,c5);
+      const now=Date.now();
+      M.signals.unshift({t:now,txt:hhmm(now)+' · BTCUSDT · confluence '+Math.round(sc.conf*100)+'% · '+sc.checks});
+      if(M.signals.length>40)M.signals.length=40;
+      M.lastScan=now;
+      if(sc.conf>=M.minConf){
+        const stake=Math.max(10,+M.stake||25);
+        const real=!!(B.real&&B.real.on);
+        let entry=sc.px,qty=stake/entry*(real?1:0.999),ok=true;
+        if(real){
+          try{const r=await bnRealBuy('BTCUSDT',stake);if(r&&r.executedQty){entry=+r.cummulativeQuoteQty/+r.executedQty;qty=+r.executedQty;}else ok=false;}
+          catch(e){ok=false;M.signals.unshift({t:now,txt:hhmm(now)+' · ⚠️ achat réel échoué : '+(e.message||'')});}
+        }
+        if(ok){
+          M.open.push({t:now,sym:'BTCUSDT',stake,qty,entry,tp:entry*(1+M.tp/100),sl:entry*(1-M.sl/100),conf:sc.conf});
+          B.trades.unshift({t:now,sym:'BTCUSDT',side:'BUY',kind:'SNP',amt:stake,entry,exit:null,pnl:null});
+          if(B.trades.length>120)B.trades.length=120;
+          M.signals.unshift({t:now,txt:hhmm(now)+' · 🎯 TIR ÉLITE BTCUSDT @ '+entry.toFixed(2)+' (confiance '+Math.round(sc.conf*100)+'%)'});
+        }
+      }
+    }
+    save();
+  }catch(e){}
+  snpBusy=false;
+  snpRender();
+  try{render()}catch(e){}
+}
+async function snpCheckCloses(){
+  const B=S.bnc,M=B.snp; if(!M)return;
+  const real=!!(B.real&&B.real.on);
+  for(const p of [...(M.open||[])]){
+    const px=(B.px||{})[p.sym]; if(px==null)continue;
+    if(px>=p.tp||px<=p.sl){
+      const win=px>=p.tp; let pnl;
+      if(real){
+        try{ await bnRealSell(p.sym,p.qty); pnl=p.stake*(px/p.entry-1); }
+        catch(e){ pnl=0; }
+      }else{ pnl=p.qty*px*(1-0.001)-p.stake; }
+      if(B.real.account&&B.real.account.usdt)B.real.account.usdt+=pnl; else B.usdt+=pnl;
+      const row=B.trades.find(r=>r.kind==='SNP'&&r.sym===p.sym&&r.pnl===null);
+      if(row){row.exit=px;row.pnl=+pnl.toFixed(3);row.tClose=Date.now();}
+      if(pnl>0)M.won++;
+      M.gain+=pnl;
+      M.open=M.open.filter(o=>o!==p);
+      M.signals.unshift({t:Date.now(),txt:hhmm(Date.now())+' · '+(win?'🎯 SNIPER gagnant':'🔴 sniper coupé')+' '+p.sym+' '+(pnl>=0?'+':'')+pnl.toFixed(3)+' USDT'});
+    }
+  }
+}
+function snpRender(){
+  const B=S.bnc,M=B.snp;
+  const sw=document.getElementById('snpSw'),lb=document.getElementById('snpLbl'),md=document.getElementById('snpMode'),st=document.getElementById('snpStats'),lg=document.getElementById('snpLog');
+  if(!sw)return;
+  sw.classList.toggle('on',!!M.on);
+  if(lb)lb.textContent=M.on?'ARMÉ — un seul tir parfait à la fois 🎯':'Désarmé';
+  const real=!!(B.real&&B.real.on);
+  if(md)md.innerHTML=real?'<span class="up">MODE RÉEL</span>':'<span style="color:var(--amber)">mode papier</span>';
+  if(st)st.innerHTML=
+    (M.open.length?M.open.map(p=>'POSITION BTCUSDT @ '+p.entry.toFixed(2)+' → TP '+p.tp.toFixed(2)+' / SL '+p.sl.toFixed(2)).join('<br/>'):'En observation — aucune position.<br/>')+
+    'Gagnantes : '+M.won+' · gain : <span class="'+(M.gain>=0?'up':'dn')+'">'+(M.gain>=0?'+':'')+M.gain.toFixed(3)+' USDT</span>';
+  if(lg)lg.innerHTML=M.signals.slice(0,6).map(x=>x.txt).join('<br/>')||'Aucune vérification encore — toutes les 30 secondes.';
+  ['snpStk','snpCf','snpTp','snpSl'].forEach((id,ix)=>{
+    const el=document.getElementById(id); if(el&&document.activeElement!==el)el.value=[Math.round(M.stake),Math.round(M.minConf*100),M.tp,M.sl][ix];
+  });
+}
+
 /* flux prix 4 s : positions en cours toujours à jour */
 async function pxTick(){
   const B=S.bnc;
-  const ghOn=!!(B.green&&B.green.on), momOn=!!(B.mom&&B.mom.on), revOn=!!(B.rev&&B.rev.on);
+  const ghOn=!!(B.green&&B.green.on), momOn=!!(B.mom&&B.mom.on), revOn=!!(B.rev&&B.rev.on), snpOn=!!(B.snp&&B.snp.on);
   let vis=false;
   try{vis=S.broker==='bnc'&&(document.getElementById('v-bnc').classList.contains('on')||document.getElementById('v-home').classList.contains('on'));}catch(e){}
-  if(!ghOn&&!momOn&&!revOn&&!vis)return;
+  if(!ghOn&&!momOn&&!revOn&&!snpOn&&!vis)return;
   await bnPrices();
   if(ghOn)await ghCheckCloses();
   if(momOn)await momCheckCloses();
   if(revOn)await revCheckCloses();
-  if(vis){ghRender();momRender();revRender();try{render()}catch(e){}}
+  if(snpOn)await snpCheckCloses();
+  if(vis){ghRender();momRender();revRender();snpRender();try{render()}catch(e){}}
 }
 
 function bnRender(){
-  bnSrvRender(); bnSrvStatus(); tvInit(); ghRender(); momRender(); revRender();
+  bnSrvRender(); bnSrvStatus(); tvInit(); ghRender(); momRender(); revRender(); snpRender();
   const B=S.bnc;
   if(!document.getElementById('bnStatus'))return;
   document.getElementById('bnStatus').innerHTML='<span class="'+(B.status.startsWith('Binance OK')?'up':'dn')+'">'+B.status+'</span> · Solde démo : <b>'+fmt(B.usdt,2)+' USDT</b>';
@@ -2712,7 +2844,7 @@ function bnRender(){
     if(B.diag){h+='<div style="margin-top:6px">'+B.diag.lines.map(l=>'<div>'+l+'</div>').join('')+(B.diag.done?'':'<div>⏳ test en cours…</div>')+'</div>';}
     rs.innerHTML=h;
   }
-  document.getElementById('bnLog').innerHTML=B.trades.slice(0,40).map(t=>'<tr><td>'+hhmm(t.t)+'</td><td>'+(t.kind==='ACC-BTC'?'🪙 ACC':(t.kind==='GH'?'🟢 CHASSE':(t.kind==='MOM'?'🚀 MOM':(t.kind==='REV'?'🔄 RSI':'📈 SCALP'))))+'</td><td>'+t.sym+'</td><td class="'+(t.side==='BUY'?'up':'dn')+'">'+t.side+'</td><td>'+fmt(t.amt,2)+'</td><td>'+fmt(t.entry,t.entry>100?2:5)+'</td><td>'+(t.exit!=null?fmt(t.exit,t.exit>100?2:5):'—')+'</td><td class="'+((t.pnl||0)>=0?'up':'dn')+'">'+(t.pnl!=null?t.pnl.toFixed(2):'ouverte')+'</td></tr>').join('')||'<tr><td colspan="8" style="padding:12px;color:var(--txt3)">Aucun trade pour l\u2019instant.</td></tr>';
+  document.getElementById('bnLog').innerHTML=B.trades.slice(0,40).map(t=>'<tr><td>'+hhmm(t.t)+'</td><td>'+(t.kind==='ACC-BTC'?'🪙 ACC':(t.kind==='GH'?'🟢 CHASSE':(t.kind==='MOM'?'🚀 MOM':(t.kind==='REV'?'🔄 RSI':(t.kind==='SNP'?'🎯 SNIPER':'📈 SCALP')))))+'</td><td>'+t.sym+'</td><td class="'+(t.side==='BUY'?'up':'dn')+'">'+t.side+'</td><td>'+fmt(t.amt,2)+'</td><td>'+fmt(t.entry,t.entry>100?2:5)+'</td><td>'+(t.exit!=null?fmt(t.exit,t.exit>100?2:5):'—')+'</td><td class="'+((t.pnl||0)>=0?'up':'dn')+'">'+(t.pnl!=null?t.pnl.toFixed(2):'ouverte')+'</td></tr>').join('')||'<tr><td colspan="8" style="padding:12px;color:var(--txt3)">Aucun trade pour l\u2019instant.</td></tr>';
 }
 /* ---------- FOND ANIMÉ : GRAPHIQUES ---------- */
 (function(){
@@ -2901,14 +3033,15 @@ function bhRender(){
     acc=(R.on&&R.account)?('<b class="up">✔ '+(R.account.accountType||'SPOT')+'</b> · <span class="dn">RÉEL</span>'):'Démo locale — clés API dans Réglages';
     bl=(R.on&&R.account)?(R.account.usdt.toFixed(2)+' USDT <span class="dn">RÉEL</span>'):(fmt(B.usdt,2)+' USDT <span style="color:var(--txt3)">(démo)</span>');
     rp=(B.trades||[]).reduce((a,c)=>a+(c.pnl||0),0);
-    const G=B.green||{open:[],gain:0,won:0},MO=B.mom||{open:[],gain:0,won:0,signals:[]},RV=B.rev||{open:[],gain:0,won:0,signals:[]};
+    const G=B.green||{open:[],gain:0,won:0},MO=B.mom||{open:[],gain:0,won:0,signals:[]},RV=B.rev||{open:[],gain:0,won:0,signals:[]},SN=B.snp||{open:[],gain:0,won:0,signals:[]};
     const pxOf=sym=>{const p=(B.px||{})[sym];if(p!=null)return p;const sc=(B.scans||[]).find(s=>s.sym===sym);return sc?sc.px:null;};
     const flt=list=>list.reduce((a,p)=>{const px=pxOf(p.sym);return a+(px!=null?(px-p.entry)*p.qty:0);},0);
-    fp=flt(B.open||[])+flt(G.open)+flt(MO.open)+flt(RV.open);
+    fp=flt(B.open||[])+flt(G.open)+flt(MO.open)+flt(RV.open)+flt(SN.open);
     const ghOn=G.on&&G.open.length>0;
     acc+='<br/>🟢 Chasseur : '+G.won+' vert'+(G.won>1?'s':'o')+' · gain <span class="'+(G.gain>=0?'up':'dn')+'">'+(G.gain>=0?'+':'')+G.gain.toFixed(3)+' USDT</span>'+(ghOn?' · '+G.open.length+' en chasse':'')+(G.on?' · <span class="up">ARMÉ</span>':'');
     if(MO.on)acc+='<br/>🚀 Momentum : '+(MO.signals||[]).length+' signaux · '+MO.open.length+' en cours · gain <span class="'+(MO.gain>=0?'up':'dn')+'">'+(MO.gain>=0?'+':'')+MO.gain.toFixed(3)+' USDT</span>';
     if(RV.on)acc+='<br/>🔄 RSI : '+(RV.signals||[]).length+' signaux · '+RV.open.length+' en cours · gain <span class="'+(RV.gain>=0?'up':'dn')+'">'+(RV.gain>=0?'+':'')+RV.gain.toFixed(3)+' USDT</span>';
+    if(SN.on)acc+='<br/>🎯 Sniper BTC : '+(SN.open.length?'EN POSITION':'en observation')+' · gain <span class="'+(SN.gain>=0?'up':'dn')+'">'+(SN.gain>=0?'+':'')+SN.gain.toFixed(3)+' USDT</span>';
     histVisible=false;
   }
   if(hw)hw.style.display=histVisible?'block':'none';
@@ -2966,10 +3099,11 @@ function boot(){
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
   S.broker=S.broker||'';
-  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},mom:{on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},rev:{on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},tv:'BTCUSDT'},S.bnc||{});
+  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},mom:{on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},rev:{on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},snp:{on:false,stake:25,minConf:0.75,tp:1.0,sl:0.5,open:[],signals:[],won:0,gain:0,lastScan:0},tv:'BTCUSDT'},S.bnc||{});
   S.bnc.srv=!!S.bnc.srv; S.auto=Object.assign({dv:false,ma:false,bnc:false},S.auto||{});
   S.bnc.green=Object.assign({on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},S.bnc.green||{}); S.bnc.tv=S.bnc.tv||'BTCUSDT';
   S.bnc.mom=Object.assign({on:false,minConf:0.65,stake:20,tp:1.2,sl:0.6,open:[],signals:[],won:0,gain:0,lastScan:0},S.bnc.mom||{}); S.bnc.rev=Object.assign({on:false,rsiBuy:25,rsiSell:75,stake:20,tp:1.5,sl:0.8,open:[],signals:[],won:0,gain:0},S.bnc.rev||{});
+  S.bnc.snp=Object.assign({on:false,stake:25,minConf:0.75,tp:1.0,sl:0.5,open:[],signals:[],won:0,gain:0,lastScan:0},S.bnc.snp||{});
   S.bnc.real=Object.assign({apiKey:'',apiSecret:'',on:false,account:null,status:''},S.bnc.real||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
