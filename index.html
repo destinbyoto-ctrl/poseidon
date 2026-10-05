@@ -458,7 +458,7 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
     <button data-v="trades" data-bk="ma" onclick="goView('trades')"><span class="ic">📋</span>Trades</button>
     <button data-v="bnc" data-bk="bnc" onclick="goView('bnc')"><span class="ic">🤖</span>Outils IA Binance</button>
     <button data-v="settings" data-bk="all" onclick="goView('settings')"><span class="ic">⚙️</span>Réglages</button>
-    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.2</b> — Multi-broker</div>
+    <div style="padding:10px 16px;font-size:11px;color:var(--txt3);border-top:1px solid var(--line)">Poseidon <b style="color:var(--teal)">v4.3</b> — Multi-broker</div>
     <div class="sep"></div>
     <div class="plan">Plan : <b>POSEIDON PRO</b><br/>Licences : illimitées<br/>Compte : démo + réel<br/>Renouvelement : jamais 🔱</div>
   </div>
@@ -615,6 +615,29 @@ label{font-size:9.5px;margin-bottom:4px;letter-spacing:.4px}
       </div>
       <div id="bnSrvSt" class="mono" style="font-size:11px;line-height:1.9;color:var(--txt2)"></div>
       <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Armé, le robot Binance continue à scanner et trader depuis le serveur toutes les 15 min (TP +0,5% / SL -0,35%, 3 positions max), même app fermée. Il utilise le dernier modèle entraîné et le seuil de l'accueil. Le switch 🤖 ci-dessus ne concerne que l'app dans ton navigateur.</div>
+    </div>
+    <div class="setcard" style="grid-column:1/-1">
+      <h3>📈 Marché en direct (TradingView)</h3>
+      <div id="tvSyms" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+      <div id="tvChart" style="height:420px;border-radius:12px;overflow:hidden;background:#0a0f16"></div>
+    </div>
+    <div class="setcard" style="grid-column:1/-1">
+      <h3>🟢 Chasseur de vert — scalping IA ultra-agressif</h3>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="switch" id="ghSw" onclick="ghToggle()"></div>
+        <span id="ghLbl" style="font-size:12px;color:var(--txt2)">Désarmé</span>
+        <span id="ghMode" style="font-size:11px"></span>
+        <button class="btn sm ghost" onclick="ghTick(true)">⚡ Chasse maintenant</button>
+      </div>
+      <div id="ghStats" class="mono" style="font-size:11.5px;line-height:1.9;color:var(--txt2);margin-bottom:8px"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:8px">
+        <div><label>MISE (% CAPITAL)</label><input id="ghPct" type="number" step="0.5" min="0.5" max="50" onchange="ghSet()"></div>
+        <div><label>PRISE DE VERT %</label><input id="ghTp" type="number" step="0.05" min="0.05" max="5" onchange="ghSet()"></div>
+        <div><label>COUPE ROUGE %</label><input id="ghSl" type="number" step="0.05" min="0.05" max="5" onchange="ghSet()"></div>
+        <div><label>CONFIANCE MIN %</label><input id="ghCf" type="number" step="1" min="40" max="90" onchange="ghSet()"></div>
+      </div>
+      <div id="ghLog" class="mono" style="font-size:11px;line-height:1.7;color:var(--txt2);max-height:110px;overflow:auto"></div>
+      <div style="font-size:10.5px;color:var(--txt3);margin-top:8px">Mission : uniquement du vert. Il ouvre des positions IA à forte confiance et les referme immédiatement dès qu'elles touchent le vert (+0,35% par défaut), coupe vite le rouge. Cycle toutes les 8 secondes sur les 6 paires. La mise s'adapte à ton capital (% du solde dispo). En PAPIER, les frais Binance (0,1%/side) sont simulés pour des stats honnêtes. En mode RÉEL (si activé dans Réglages), il passe les vrais ordres via tes clés API.</div>
     </div>
     </div>
 
@@ -822,7 +845,7 @@ function defaultState(){
     signals:[], open:[], closed:[], eqCurve:[{t:Date.now(),v:10000}],
     meta:{token:'',accountId:'',realMode:false,aiReal:false,status:'non connecté',connected:false,deployed:false,account:null,info:null,positions:[],realOrders:[],client:'',avail:null,dayStartEquity:null,realFeed:{}},
     deriv:{token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},
-    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''}},
+    bnc:{usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},tv:'BTCUSDT'},
   };
 }
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
@@ -2180,8 +2203,157 @@ async function bnAccTick(scans){
   B.trades.unshift({t:now,kind:'ACC-BTC',sym:'BTCUSDT',side:'BUY',amt:A.perBuy,entry:px,exit:null,pnl:null});
   toast('🪙 Accumulation : '+A.perBuy+' USDT de BTC achetés à '+px.toLocaleString()+' $'+(dip?' (renfort baisse)':''),'🪙');
 }
+/* ===== v4.3 : TRADINGVIEW + CHASSEUR DE VERT ===== */
+const TV_SYMBOLS=['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','DOGEUSDT'];
+let _tvLoaded=null;
+function tvInit(){
+  const bar=document.getElementById('tvSyms'); if(!bar)return;
+  if(!bar.children.length){
+    TV_SYMBOLS.forEach(s=>{
+      const b=document.createElement('button');
+      b.className='btn sm ghost'; b.textContent=s.replace('USDT',''); b.onclick=()=>tvLoad(s);
+      bar.appendChild(b);
+    });
+  }
+  if(!_tvLoaded)tvLoad(S.bnc.tv||'BTCUSDT');
+}
+function tvLoad(sym){
+  S.bnc.tv=sym; save();
+  document.querySelectorAll('#tvSyms button').forEach(b=>b.style.borderColor=b.textContent===sym.replace('USDT','')?'var(--teal)':'');
+  const host=document.getElementById('tvChart'); if(!host)return;
+  if(window.__NO_TV__){host.innerHTML='Graphique '+sym+' ( désactivé en test )';_tvLoaded=sym;return;}
+  host.innerHTML='<div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div></div>';
+  const s=document.createElement('script');
+  s.type='text/javascript'; s.async=true;
+  s.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  s.innerHTML=JSON.stringify({autosize:true,symbol:'BINANCE:'+sym,interval:'1',timezone:'Africa/Bujumbura',theme:'dark',style:'1',locale:'fr',hide_top_toolbar:false,allow_symbol_change:true,save_image:false,backgroundColor:'rgba(7,11,17,1)',gridColor:'rgba(20,32,44,0.4)',support_host:'https://www.tradingview.com'});
+  host.firstChild.appendChild(s);
+  _tvLoaded=sym;
+}
+let ghTimer=null,ghBusy=false;
+function ghToggle(){
+  const G=S.bnc.green;
+  if(!G.on){
+    if(!S.auto||!S.auto.bnc){toast("⛔ Active d'abord le switch « Trading autonome » sur l'accueil — le chasseur respecte tes permissions",'⛔');return;}
+    G.on=true; ghStart();
+    toast('🟢 Chasseur de vert ARMÉ — scalping '+((S.bnc.real&&S.bnc.real.on)?'RÉEL':'papier')+' toutes les 8s','🟢');
+  }else{
+    G.on=false; ghStop();
+    toast('Chasseur de vert désarmé','⏸️');
+  }
+  save(); ghRender();
+}
+function ghStart(){ if(ghTimer)clearInterval(ghTimer); ghTimer=setInterval(ghTick,8000); ghTick(true); }
+function ghStop(){ if(ghTimer){clearInterval(ghTimer);ghTimer=null;} }
+function ghSet(){
+  const G=S.bnc.green;
+  G.pct=Math.max(0.5,Math.min(50,+document.getElementById('ghPct').value||G.pct));
+  G.tp=Math.max(0.05,Math.min(5,+document.getElementById('ghTp').value||G.tp));
+  G.sl=Math.max(0.05,Math.min(5,+document.getElementById('ghSl').value||G.sl));
+  G.minConf=Math.max(0.4,Math.min(0.9,(+document.getElementById('ghCf').value||Math.round(G.minConf*100))/100));
+  save(); ghRender(); toast('Réglages du chasseur mis à jour ✔','🟢');
+}
+function ghHeur(c,v,i){
+  const px=c[i];
+  const up3=px/c[i-3]-1, up1=px/c[i-1]-1;
+  const avg20=v.slice(-20).reduce((a,b)=>a+b,0)/Math.min(20,v.length);
+  const vol=avg20?v[i]/avg20:1;
+  const heur=Math.min(0.96,0.5+up3*55+up1*35+(vol>1.6?0.06:0)+(px>c[i-5]?0.03:0));
+  const B=S.bnc;
+  const ml=B.ml?bnPredict(bnFeat(c,v,i)):heur;
+  return {conf:Math.min(0.97,Math.max(heur*0.55+ml*0.45,heur)),heur,ml};
+}
+async function ghTick(manual){
+  const B=S.bnc, G=B.green;
+  if(!G.on)return;
+  if(!S.auto||!S.auto.bnc){ghRender();return;}
+  if(ghBusy)return;
+  ghBusy=true;
+  try{
+    const real=!!(B.real&&B.real.on);
+    let avail=(real&&B.real.account&&B.real.account.usdt)?B.real.account.usdt:B.usdt;
+    const pxs={};
+    // 1) clôtures immédiates dès que vert
+    for(const p of [...G.open]){
+      try{
+        const k=await bnKlines(p.sym,3);
+        const px=+k[k.length-1][4]; pxs[p.sym]=px;
+        if(px>=p.tp||px<=p.sl){
+          const win=px>=p.tp;
+          let pnl;
+          if(real){
+            try{ await bnRealSell(p.sym,p.qty); pnl=p.stake*(px/p.entry-1); }
+            catch(e){ G.trades.unshift({t:Date.now(),txt:'⚠️ vente réelle échouée '+p.sym+' : '+e.message}); pnl=0; }
+          }else{
+            const fee=0.001;
+            pnl=p.qty*px*(1-fee)-p.stake;
+          }
+          if(B.real.account&&B.real.account.usdt)B.real.account.usdt+=pnl; else B.usdt+=pnl;
+          if(pnl>0)G.won++;
+          G.gain+=pnl;
+          G.open=G.open.filter(o=>o!==p);
+          G.trades.unshift({t:Date.now(),txt:(win?'🟢 VERT':'🔴 coupé')+' '+p.sym+' '+(pnl>=0?'+':'')+pnl.toFixed(3)+' USDT ('+(real?'réel':'papier')+')'});
+        }
+      }catch(e){}
+    }
+    // 2) chasse : nouvelles positions IA puissantes
+    if(G.open.length<4){
+      for(const s of B.pairs){
+        if(G.open.length>=4)break;
+        if(G.open.find(o=>o.sym===s))continue;
+        if(avail<10)break;
+        try{
+          const k=await bnKlines(s,120);
+          const c=k.map(x=>+x[4]), v=k.map(x=>+x[6]);
+          const px=c[c.length-1]; pxs[s]=px;
+          const h=ghHeur(c,v,c.length-1);
+          if(h.conf>=G.minConf){
+            const stake=Math.max(10,Math.round(avail*G.pct/100*100)/100);
+            if(stake>avail)continue;
+            let entry=px,qty=stake/px*(real?1:0.999),ok=true;
+            if(real){
+              try{
+                const r=await bnRealBuy(s,stake);
+                if(r&&r.executedQty){entry=+r.cummulativeQuoteQty/+r.executedQty;qty=+r.executedQty;avail-=stake;if(B.real.account&&B.real.account.usdt)B.real.account.usdt-=stake;}
+                else ok=false;
+              }catch(e){ok=false;G.trades.unshift({t:Date.now(),txt:'⚠️ achat réel échoué '+s+' : '+(e.message||'')});}
+            }else{avail-=stake;B.usdt-=0;}
+            if(!ok)continue;
+            G.open.push({t:Date.now(),sym:s,stake,qty,entry,tp:entry*(1+G.tp/100),sl:entry*(1-G.sl/100),conf:+h.conf.toFixed(3)});
+            G.trades.unshift({t:Date.now(),txt:'⚡ ACHAT '+s+' @ '+entry.toFixed(px<1?6:2)+' · confiance '+Math.round(h.conf*100)+'% ('+(real?'réel':'papier')+')'});
+          }
+        }catch(e){}
+      }
+    }
+    while(G.trades.length>60)G.trades.length=60;
+    save();
+  }catch(e){}
+  ghBusy=false;
+  ghRender();
+}
+function ghRender(){
+  const B=S.bnc,G=B.green;
+  const sw=document.getElementById('ghSw'),lb=document.getElementById('ghLbl'),md=document.getElementById('ghMode'),st=document.getElementById('ghStats'),lg=document.getElementById('ghLog');
+  if(!sw)return;
+  sw.classList.toggle('on',!!G.on);
+  if(lb)lb.textContent=G.on?'ARMÉ — que du vert 🟢':'Désarmé';
+  const real=!!(B.real&&B.real.on);
+  if(md)md.innerHTML=real?'<span class="up">MODE RÉEL — vrais ordres</span>':'<span style="color:var(--amber)">mode papier (frais simulés)</span>';
+  const n=G.open.length,total=G.trades.filter(t=>t.txt&&(t.txt.includes('VERT')||t.txt.includes('coupé'))).length;
+  if(st)st.innerHTML=
+    'Positions ouvertes : '+n+'/4 · vertos : '+G.won+' · gain cumulé : <span class="'+(G.gain>=0?'up':'dn')+'">'+(G.gain>=0?'+':'')+G.gain.toFixed(3)+' USDT</span><br/>'+
+    (n?G.open.map(p=>p.sym+' '+(pxsOf(p))+' '+(p.tp?'→ TP '+p.tp.toFixed(p.tp<1?6:2):'')).join(' · '):'En chasse…')+
+    (real&&B.real.account?(' · solde réel '+B.real.account.usdt.toFixed(2)+' USDT'):(' · solde papier '+B.usdt.toFixed(2)+' USDT'));
+  function pxsOf(p){return 'ouvert @ '+p.entry.toFixed(p.entry<1?6:2);}
+  if(lg)lg.innerHTML=G.trades.slice(0,6).map(t=>hhmm(t.t)+' '+t.txt).join('<br/>')||'Aucune action encore — il chasse toutes les 8 secondes.';
+  ['ghPct','ghTp','ghSl','ghCf'].forEach((id,ix)=>{
+    const el=document.getElementById(id); if(el&&document.activeElement!==el)el.value=[G.pct,G.tp,G.sl,Math.round(G.minConf*100)][ix];
+  });
+  if(G.on&&!ghTimer&&S.auto&&S.auto.bnc)ghStart();
+}
+
 function bnRender(){
-  bnSrvRender(); bnSrvStatus();
+  bnSrvRender(); bnSrvStatus(); tvInit(); ghRender();
   const B=S.bnc;
   if(!document.getElementById('bnStatus'))return;
   document.getElementById('bnStatus').innerHTML='<span class="'+(B.status.startsWith('Binance OK')?'up':'dn')+'">'+B.status+'</span> · Solde démo : <b>'+fmt(B.usdt,2)+' USDT</b>';
@@ -2464,8 +2636,9 @@ function boot(){
   S.deriv=Object.assign({token:'',appId:'1089',connected:false,tradeOn:false,info:null,status:'non connecté',multiplier:100,positions:[],closed:[],orders:[],avail:null,subs:{},dayStartBal:null},S.deriv||{});
   S.deriv.connected=false; S.deriv.positions=[]; // reconnexion requise à chaque session
   S.broker=S.broker||'';
-  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''}},S.bnc||{});
+  S.bnc=Object.assign({usdt:1000,perTrade:20,conf:0.62,scalpOn:false,ml:null,scans:[],open:[],trades:[],host:null,alt:false,diag:null,status:'non testé',pairs:['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','DOGEUSDT'],acc:{enabled:false,perBuy:25,freqH:6,dipPct:2.5,lastBuyT:0,refPrice:0,btc:0,invested:0,buys:[]},real:{apiKey:'',apiSecret:'',on:false,account:null,status:''},green:{on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},tv:'BTCUSDT'},S.bnc||{});
   S.bnc.srv=!!S.bnc.srv; S.auto=Object.assign({dv:false,ma:false,bnc:false},S.auto||{});
+  S.bnc.green=Object.assign({on:false,pct:3,tp:0.35,sl:0.25,minConf:0.58,open:[],trades:[],won:0,gain:0},S.bnc.green||{}); S.bnc.tv=S.bnc.tv||'BTCUSDT';
   S.bnc.real=Object.assign({apiKey:'',apiSecret:'',on:false,account:null,status:''},S.bnc.real||{});
   if(!/^\d+$/.test(String(S.deriv.appId||'')))S.deriv.appId='1089'; // app_id doit être numérique
   S.meta.connected=false; // statut à re-valider à chaque session
